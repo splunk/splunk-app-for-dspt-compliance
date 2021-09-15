@@ -1,0 +1,106 @@
+<dashboard theme="dark">
+  <label>VPN</label>
+  <row>
+    <panel>
+      <title>Users Connected Via VPN</title>
+      <single>
+        <title>ref:9.5.8</title>
+        <search>
+          <query>| tstats summariesonly=true allow_old_summaries=true dc(All_Sessions.user) from datamodel=Network_Sessions.All_Sessions where nodename=All_Sessions.VPN</query>
+          <earliest>-24h@h</earliest>
+          <latest>now</latest>
+          <sampleRatio>1</sampleRatio>
+        </search>
+        <option name="colorMode">block</option>
+        <option name="drilldown">none</option>
+        <option name="rangeColors">["0x0b45a2","0x0b45a2"]</option>
+        <option name="rangeValues">[0]</option>
+        <option name="underLabel">Last 24 hours</option>
+        <option name="useColors">1</option>
+      </single>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <title>Succesful VPN Authentications</title>
+      <single>
+        <title>ref:9.5.8</title>
+        <search>
+          <query>| tstats summariesonly=true allow_old_summaries=true count from datamodel=Network_Sessions.All_Sessions where nodename=All_Sessions.VPN NOT All_Sessions.action IN (drop*,fail*,block*) All_Sessions.user="$user1$"</query>
+          <earliest>-24h@h</earliest>
+          <latest>now</latest>
+          <sampleRatio>1</sampleRatio>
+        </search>
+        <option name="colorMode">none</option>
+        <option name="drilldown">all</option>
+        <option name="height">90</option>
+        <option name="rangeColors">["0x53a051","0x53a051"]</option>
+        <option name="rangeValues">[0]</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="underLabel">Last 24 hours</option>
+        <option name="useColors">1</option>
+      </single>
+    </panel>
+    <panel>
+      <title>Failed VPN Authentications</title>
+      <single>
+        <title>ref:9.5.8</title>
+        <search>
+          <query>| tstats summariesonly=true allow_old_summaries=true count from datamodel=Network_Sessions.All_Sessions where nodename=All_Sessions.VPN All_Sessions.action IN (drop*,fail*,block*) All_Sessions.user=$user1$</query>
+          <earliest>-24h@h</earliest>
+          <latest>now</latest>
+          <sampleRatio>1</sampleRatio>
+        </search>
+        <option name="colorMode">none</option>
+        <option name="drilldown">all</option>
+        <option name="height">90</option>
+        <option name="rangeColors">["0xdc4e41","0xdc4e41"]</option>
+        <option name="rangeValues">[0]</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="underLabel">Last 24 hours</option>
+        <option name="useColors">1</option>
+      </single>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <title>Improbable Access by User</title>
+      <map>
+        <search>
+          <query>| tstats summariesonly=true allow_old_summaries=true values(Authentication.app) as app from datamodel=Authentication.Authentication where Authentication.action=success by Authentication.user, Authentication.src _time span=1s 
+| rename "Authentication.*" as "*" 
+| eventstats dc(src) as src_count by user 
+| search src_count&gt;1 
+| sort 0 + _time 
+| iplocation src 
+| where isnotnull(lat) AND isnotnull(lon) 
+| streamstats window=2 global=false earliest(lat) as prev_lat, earliest(lon) as prev_lon, earliest(_time) as prev_time, earliest(src) as prev_src, earliest(City) as prev_city, earliest(Country) as prev_country, earliest(app) as prev_app by user 
+| where (src != prev_src) 
+| eval lat1_r=((lat * 3.14159265358) / 180), lat2_r=((prev_lat * 3.14159265358) / 180), delta=(((prev_lon - lon) * 3.14159265358) / 180), distance=(3959 * acos(((sin(lat1_r) * sin(lat2_r)) + ((cos(lat1_r) * cos(lat2_r)) * cos(delta))))), distance=round(distance,2) 
+| fields - lat1_r, lat2_r, long1_r, long2_r, delta 
+| eval time_diff=if((('_time' - prev_time) == 0),1,('_time' - prev_time)), speed=round(((distance * 3600) / time_diff),2) 
+| where (speed &gt; 500) 
+| eval latitude=lat 
+| eval longitude=lon 
+| appendpipe 
+    [| eval latitude=prev_lat 
+    | eval longitude=prev_lon] 
+| geostats latfield=latitude longfield=longitude count by user binspanlat=5 binspanlong=5</query>
+          <earliest>-24h@h</earliest>
+          <latest>now</latest>
+          <sampleRatio>1</sampleRatio>
+        </search>
+        <option name="drilldown">none</option>
+        <option name="mapping.data.maxClusters">250</option>
+        <option name="mapping.markerLayer.markerMaxSize">50</option>
+        <option name="mapping.markerLayer.markerMinSize">30</option>
+        <option name="mapping.markerLayer.markerOpacity">1</option>
+        <option name="mapping.type">marker</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="trellis.enabled">0</option>
+        <option name="trellis.scales.shared">1</option>
+        <option name="trellis.size">medium</option>
+      </map>
+    </panel>
+  </row>
+</dashboard>

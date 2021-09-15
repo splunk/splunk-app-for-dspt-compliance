@@ -1,0 +1,6 @@
+.vscode
+*.pyc
+local.meta
+local/
+node_modules/
+output/

@@ -1,0 +1,29 @@
+<nav search_view="search" color="#0b45a2">  
+  <view name="overview" default='true' />
+  
+  <collection label="Audit">
+    <view name="administrator" />
+  	<view name="user" />
+    <view name="host" />
+    <view name="malware" />
+    <view name="network" />
+    <view name="vpn" />
+  </collection>
+  
+  <view name="cyber_alerts" default='true' />
+  
+  <collection label="Report">
+    <collection label="Reports 1">
+      <view name="reports" />
+    </collection>
+    <view name="reports" />
+  	<view name="reports" />
+  	<view name="reports" />
+  </collection>
+  
+  <collection label="Core Views">
+    <view name="search" />
+   	<view name="reports" />
+    <view name="dashboards" />
+  </collection>
+</nav>

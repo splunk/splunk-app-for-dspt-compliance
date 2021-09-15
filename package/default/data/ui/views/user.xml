@@ -1,0 +1,393 @@
+<dashboard theme="dark">
+  <label>User</label>
+  <row>
+    <panel>
+      <title>Successful Authentications</title>
+      <single>
+        <search>
+          <query>| tstats summariesonly=true allow_old_summaries=true count from datamodel=Authentication.Authentication where Authentication.action=success by _time span=1d</query>
+          <earliest>-30d@d</earliest>
+          <latest>now</latest>
+          <sampleRatio>1</sampleRatio>
+        </search>
+        <option name="colorBy">trend</option>
+        <option name="colorMode">none</option>
+        <option name="drilldown">all</option>
+        <option name="height">90</option>
+        <option name="numberPrecision">0</option>
+        <option name="rangeColors">["0x0b45a2","0x0b45a2"]</option>
+        <option name="rangeValues">[0]</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="showSparkline">1</option>
+        <option name="showTrendIndicator">1</option>
+        <option name="trellis.enabled">0</option>
+        <option name="trellis.scales.shared">1</option>
+        <option name="trellis.size">medium</option>
+        <option name="trendColorInterpretation">standard</option>
+        <option name="trendDisplayMode">absolute</option>
+        <option name="trendInterval">-24h</option>
+        <option name="underLabel">Compared to 24 hours before</option>
+        <option name="unitPosition">after</option>
+        <option name="useColors">1</option>
+        <option name="useThousandSeparators">1</option>
+      </single>
+    </panel>
+    <panel>
+      <title>Failed Authentications</title>
+      <single>
+        <search>
+          <query>| tstats summariesonly=true allow_old_summaries=true count from datamodel=Authentication.Authentication where Authentication.action=failure by _time span=1d</query>
+          <earliest>-30d@d</earliest>
+          <latest>now</latest>
+          <sampleRatio>1</sampleRatio>
+        </search>
+        <option name="colorBy">trend</option>
+        <option name="colorMode">none</option>
+        <option name="drilldown">all</option>
+        <option name="height">90</option>
+        <option name="numberPrecision">0</option>
+        <option name="rangeColors">["0xdc4e41","0xdc4e41"]</option>
+        <option name="rangeValues">[0]</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="showSparkline">1</option>
+        <option name="showTrendIndicator">1</option>
+        <option name="trellis.enabled">0</option>
+        <option name="trellis.scales.shared">1</option>
+        <option name="trellis.size">medium</option>
+        <option name="trendColorInterpretation">inverse</option>
+        <option name="trendDisplayMode">absolute</option>
+        <option name="trendInterval">-24h</option>
+        <option name="underLabel">Compared to 24 hours Before</option>
+        <option name="unitPosition">after</option>
+        <option name="useColors">1</option>
+        <option name="useThousandSeparators">1</option>
+      </single>
+    </panel>
+    <panel>
+      <title>Potential Brute Force Attacks</title>
+      <single>
+        <search>
+          <query>| tstats summariesonly=t allow_old_summaries=t count from datamodel=Authentication by Authentication.action, Authentication.user
+| rename "Authentication.*" as "*"
+| chart last(count) over user by action 
+| where success&gt;0 and failure&gt;20 
+| stats dc(user)</query>
+          <earliest>-24h@h</earliest>
+          <latest>now</latest>
+          <sampleRatio>1</sampleRatio>
+        </search>
+        <option name="colorBy">value</option>
+        <option name="colorMode">none</option>
+        <option name="drilldown">none</option>
+        <option name="numberPrecision">0</option>
+        <option name="rangeColors">["0x53a051","0x0877a6","0xf8be34","0xf1813f","0xdc4e41"]</option>
+        <option name="rangeValues">[0,30,70,100]</option>
+        <option name="showSparkline">1</option>
+        <option name="showTrendIndicator">1</option>
+        <option name="trellis.enabled">0</option>
+        <option name="trellis.scales.shared">1</option>
+        <option name="trellis.size">medium</option>
+        <option name="trendColorInterpretation">standard</option>
+        <option name="trendDisplayMode">absolute</option>
+        <option name="unitPosition">after</option>
+        <option name="useColors">0</option>
+        <option name="useThousandSeparators">1</option>
+      </single>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <title>Default Account Usage Past Year</title>
+      <table>
+        <title>ref:4.2.4</title>
+        <search>
+          <query>| tstats summariesonly=true allow_old_summaries=true count from datamodel=Authentication.Authentication where Authentication.action=* by Authentication.user, Authentication.action | search Authentication.user IN (admin,administrator,sa,guest,root,mysql-root) | rename Authentication.* as *</query>
+          <earliest>-30d@d</earliest>
+          <latest>now</latest>
+          <sampleRatio>1</sampleRatio>
+        </search>
+        <option name="count">20</option>
+        <option name="dataOverlayMode">none</option>
+        <option name="drilldown">none</option>
+        <option name="percentagesRow">false</option>
+        <option name="rowNumbers">false</option>
+        <option name="totalsRow">false</option>
+        <option name="wrap">true</option>
+        <format type="color" field="action">
+          <colorPalette type="map">{"success":#DC4E41}</colorPalette>
+        </format>
+      </table>
+    </panel>
+    <panel>
+      <title>Dormant Accounts During Past Year</title>
+      <table>
+        <title>ref:4.2.4</title>
+        <search>
+          <query>| tstats summariesonly=true allow_old_summaries=true latest(_time) as last_login from datamodel=Authentication.Authentication where Authentication.action=* by Authentication.user | rename "Authentication.*" as "*" | eval days_ago=(now()-last_login)/3600/24 | sort - days_ago | where days_ago &gt; 30 | fields - last_login | rename days_ago AS "last succesful login"</query>
+          <earliest>-1y</earliest>
+          <latest>now</latest>
+          <sampleRatio>1</sampleRatio>
+        </search>
+        <option name="count">5</option>
+        <option name="dataOverlayMode">none</option>
+        <option name="drilldown">cell</option>
+        <option name="percentagesRow">false</option>
+        <option name="rowNumbers">false</option>
+        <option name="totalsRow">false</option>
+        <option name="wrap">true</option>
+        <format type="number" field="days">
+          <option name="precision">0</option>
+        </format>
+        <format type="color" field="days">
+          <colorPalette type="minMidMax" maxColor="#DC4E41" minColor="#FFFFFF"></colorPalette>
+          <scale type="minMidMax"></scale>
+        </format>
+        <format type="color" field="days_ago">
+          <colorPalette type="minMidMax" maxColor="#DC4E41" minColor="#FFFFFF"></colorPalette>
+          <scale type="minMidMax"></scale>
+        </format>
+        <format type="number" field="days_ago">
+          <option name="precision">0</option>
+        </format>
+        <format type="number" field="last succesful login, days ago">
+          <option name="precision">0</option>
+          <option name="unit">days ago</option>
+        </format>
+        <format type="number" field="last succesful login">
+          <option name="precision">0</option>
+          <option name="unit">days ago</option>
+        </format>
+        <format type="color" field="last succesful login">
+          <colorPalette type="minMidMax" maxColor="#0B45A2" minColor="#FFFFFF"></colorPalette>
+          <scale type="minMidMax"></scale>
+        </format>
+      </table>
+    </panel>
+    <panel>
+      <title>Potential Brute Force Attacks</title>
+      <table>
+        <title>ref:4.5.2</title>
+        <search>
+          <query>| tstats summariesonly=t allow_old_summaries=t count from datamodel=Authentication by Authentication.action, Authentication.user 
+| rename "Authentication.*" as "*" 
+| chart last(count) over user by action 
+| where success&gt;0 and failure&gt;20 
+| sort -failure 
+| rename failure as failures 
+| table user, failures, success</query>
+          <earliest>-24h@h</earliest>
+          <latest>now</latest>
+          <sampleRatio>1</sampleRatio>
+        </search>
+        <option name="count">5</option>
+        <option name="dataOverlayMode">none</option>
+        <option name="drilldown">none</option>
+        <option name="percentagesRow">false</option>
+        <option name="rowNumbers">false</option>
+        <option name="totalsRow">false</option>
+        <option name="wrap">true</option>
+        <format type="color" field="failures">
+          <colorPalette type="minMidMax" maxColor="#0B45A2" minColor="#FFFFFF"></colorPalette>
+          <scale type="minMidMax"></scale>
+        </format>
+      </table>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <title>Account Lockouts</title>
+      <single>
+        <search>
+          <query>`wineventlog-index` EventCode=4740 | stats dc(user)</query>
+          <earliest>-24h@h</earliest>
+          <latest>now</latest>
+          <sampleRatio>1</sampleRatio>
+        </search>
+        <option name="colorBy">value</option>
+        <option name="colorMode">block</option>
+        <option name="drilldown">none</option>
+        <option name="numberPrecision">0</option>
+        <option name="rangeColors">["0x0b45a2","0x0b45a2"]</option>
+        <option name="rangeValues">[0]</option>
+        <option name="showSparkline">1</option>
+        <option name="showTrendIndicator">1</option>
+        <option name="trellis.enabled">0</option>
+        <option name="trellis.scales.shared">1</option>
+        <option name="trellis.size">medium</option>
+        <option name="trendColorInterpretation">standard</option>
+        <option name="trendDisplayMode">absolute</option>
+        <option name="underLabel">ref:4.5.2</option>
+        <option name="unitPosition">after</option>
+        <option name="useColors">1</option>
+        <option name="useThousandSeparators">1</option>
+      </single>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <title>Successful and Failed Logons</title>
+      <chart>
+        <search>
+          <query>| tstats prestats=true summariesonly=true allow_old_summaries=true count from datamodel=Authentication.Authentication where Authentication.action=* Authentication.action!=unknown by _time, Authentication.action span=10m 
+| timechart minspan=10m count by Authentication.action</query>
+          <earliest>-24h@h</earliest>
+          <latest>now</latest>
+          <sampleRatio>1</sampleRatio>
+        </search>
+        <option name="charting.axisLabelsX.majorLabelStyle.overflowMode">ellipsisNone</option>
+        <option name="charting.axisLabelsX.majorLabelStyle.rotation">0</option>
+        <option name="charting.axisTitleX.visibility">collapsed</option>
+        <option name="charting.axisTitleY.visibility">visible</option>
+        <option name="charting.axisTitleY2.visibility">visible</option>
+        <option name="charting.axisX.abbreviation">none</option>
+        <option name="charting.axisX.scale">linear</option>
+        <option name="charting.axisY.abbreviation">none</option>
+        <option name="charting.axisY.scale">linear</option>
+        <option name="charting.axisY2.abbreviation">none</option>
+        <option name="charting.axisY2.enabled">0</option>
+        <option name="charting.axisY2.scale">inherit</option>
+        <option name="charting.chart">area</option>
+        <option name="charting.chart.bubbleMaximumSize">50</option>
+        <option name="charting.chart.bubbleMinimumSize">10</option>
+        <option name="charting.chart.bubbleSizeBy">area</option>
+        <option name="charting.chart.nullValueMode">gaps</option>
+        <option name="charting.chart.showDataLabels">none</option>
+        <option name="charting.chart.sliceCollapsingThreshold">0.01</option>
+        <option name="charting.chart.stackMode">stacked</option>
+        <option name="charting.chart.style">shiny</option>
+        <option name="charting.drilldown">all</option>
+        <option name="charting.layout.splitSeries">0</option>
+        <option name="charting.layout.splitSeries.allowIndependentYRanges">0</option>
+        <option name="charting.legend.labelStyle.overflowMode">ellipsisMiddle</option>
+        <option name="charting.fieldColors">{"failure": 0xdc4e41, "success": 0x0b45a2}</option>
+        <option name="charting.areaFillOpacity">0.5</option>
+        <option name="charting.legend.mode">standard</option>
+        <option name="charting.legend.placement">bottom</option>
+        <option name="charting.lineWidth">10</option>
+        <option name="height">430</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="trellis.enabled">0</option>
+        <option name="trellis.scales.shared">1</option>
+        <option name="trellis.size">medium</option>
+      </chart>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <title>Users Taking Privileged Actions</title>
+      <single>
+        <title>ref:4.2.4</title>
+        <search>
+          <query>| tstats  summariesonly=t allow_old_summaries=t dc(Authentication.user) from datamodel=Authentication where nodename="Authentication.Privileged_Authentication"</query>
+          <earliest>-24h@h</earliest>
+          <latest>now</latest>
+          <sampleRatio>1</sampleRatio>
+        </search>
+        <option name="colorBy">value</option>
+        <option name="colorMode">block</option>
+        <option name="drilldown">none</option>
+        <option name="height">90</option>
+        <option name="numberPrecision">0</option>
+        <option name="rangeColors">["0x0b45a2","0x0b45a2"]</option>
+        <option name="rangeValues">[0]</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="showSparkline">1</option>
+        <option name="showTrendIndicator">1</option>
+        <option name="trellis.enabled">0</option>
+        <option name="trellis.scales.shared">1</option>
+        <option name="trellis.size">medium</option>
+        <option name="trendColorInterpretation">standard</option>
+        <option name="trendDisplayMode">absolute</option>
+        <option name="unitPosition">after</option>
+        <option name="useColors">1</option>
+        <option name="useThousandSeparators">1</option>
+      </single>
+    </panel>
+    <panel>
+      <title>Users Taking Privileged Actions First Time in 30 Days</title>
+      <single>
+        <title>ref:4.2.4</title>
+        <search>
+          <query>| tstats summariesonly=t allow_old_summaries=t count from datamodel=Authentication where nodename="Authentication.Privileged_Authentication" earliest=-30d by Authentication.user, Authentication.dest _time span=1h 
+| rename Authentication."*" as "*" 
+| eventstats earliest(_time) as earliest by user 
+| where earliest &gt;= relative_time(now(), "-24h") 
+| stats count</query>
+          <earliest>-30d@d</earliest>
+          <latest>now</latest>
+          <sampleRatio>1</sampleRatio>
+        </search>
+        <option name="colorBy">value</option>
+        <option name="colorMode">block</option>
+        <option name="drilldown">none</option>
+        <option name="height">90</option>
+        <option name="numberPrecision">0</option>
+        <option name="rangeColors">["0x0b45a2","0x0b45a2"]</option>
+        <option name="rangeValues">[0]</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="showSparkline">1</option>
+        <option name="showTrendIndicator">1</option>
+        <option name="trellis.enabled">0</option>
+        <option name="trellis.scales.shared">1</option>
+        <option name="trellis.size">medium</option>
+        <option name="trendColorInterpretation">standard</option>
+        <option name="trendDisplayMode">absolute</option>
+        <option name="unitPosition">after</option>
+        <option name="useColors">1</option>
+        <option name="useThousandSeparators">1</option>
+      </single>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <title>Top Users Taking Privileged Actions</title>
+      <table>
+        <title>ref:4.2.4</title>
+        <search>
+          <query>| tstats summariesonly=true allow_old_summaries=true count from datamodel=Authentication where nodename="Authentication.Privileged_Authentication" by _time, Authentication.user span=10m 
+| rename Authentication.user as user 
+| stats sparkline(sum(count),30m) as sparkline, sum(count) as count by user | sort - count</query>
+          <earliest>-24h@h</earliest>
+          <latest>now</latest>
+          <sampleRatio>1</sampleRatio>
+        </search>
+        <option name="count">5</option>
+        <option name="dataOverlayMode">none</option>
+        <option name="drilldown">cell</option>
+        <option name="percentagesRow">false</option>
+        <option name="rowNumbers">false</option>
+        <option name="totalsRow">false</option>
+        <option name="wrap">true</option>
+        <format type="color" field="count">
+          <colorPalette type="minMidMax" maxColor="#0B45A2" midColor="#FFFFFF" minColor="#FFFFFF"></colorPalette>
+          <scale type="minMidMax" midType="percentile" midValue="50"></scale>
+        </format>
+      </table>
+    </panel>
+    <panel>
+      <title>Users Taking Privileged Actions First Time in 30 Days</title>
+      <table>
+        <title>ref:4.2.4</title>
+        <search>
+          <query>| tstats summariesonly=t allow_old_summaries=t count from datamodel=Authentication where nodename="Authentication.Privileged_Authentication" earliest=-30d by Authentication.user, Authentication.dest _time span=1h 
+| rename Authentication."*" as "*" 
+| eventstats earliest(_time) as earliest by user 
+| where earliest &gt;= relative_time(now(), "-24h") 
+| dedup user, dest 
+| table user, dest</query>
+          <earliest>-30d@d</earliest>
+          <latest>now</latest>
+          <sampleRatio>1</sampleRatio>
+        </search>
+        <option name="count">5</option>
+        <option name="dataOverlayMode">none</option>
+        <option name="drilldown">cell</option>
+        <option name="percentagesRow">false</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="rowNumbers">false</option>
+        <option name="totalsRow">false</option>
+        <option name="wrap">false</option>
+      </table>
+    </panel>
+  </row>
+</dashboard>
