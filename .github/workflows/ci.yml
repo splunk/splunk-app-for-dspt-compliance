@@ -30,10 +30,10 @@ jobs:
           name: app_tgz
           path: dist/splunk-app-for-dspt-compliance-v0.0.1.tgz
 
-      - uses: actions/upload-artifact@v2
-        with:
-          name: ucc_out
-          path: output/splunk_app_for_dspt_compliance
+      # - uses: actions/upload-artifact@v2
+      #   with:
+      #     name: ucc_out
+      #     path: output/splunk_app_for_dspt_compliance
 
   appinspect-cli:
     name: AppInspect CLI Validation
@@ -43,7 +43,7 @@ jobs:
       - name: Download artifact
         uses: actions/download-artifact@v2
         with:
-          name: ucc_out
+          name: app_tgz
 
       - name: Setup Python
         uses: actions/setup-python@v2
@@ -57,9 +57,6 @@ jobs:
       
       - name: Run AppInspect
         run: |
-          ls -la
-          ls -la ../
-          splunk-appinspect inspect splunk_app_for_dspt_compliance --output-file appinspect.json
+          splunk-appinspect inspect splunk-app-for-dspt-compliance-v0.0.1.tgz --output-file appinspect.json
           exit `cat appinspect.json | jq '.summary.failure'`
-        working-directory: ./output
 
