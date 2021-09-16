@@ -57,6 +57,8 @@ jobs:
       
       - name: Run AppInspect
         run: |
+          ls -la
+          ls -la ../
           splunk-appinspect inspect splunk_app_for_dspt_compliance --output-file appinspect.json
           exit `cat appinspect.json | jq '.summary.failure'`
         working-directory: ./output
