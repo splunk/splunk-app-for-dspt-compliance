@@ -4,7 +4,8 @@
         "displayName": "DSPT Compliance",
         "version": "0.0.0RNone",
         "restRoot": "splunk_app_for_dspt_compliance",
-        "schemaVersion": "0.0.3"
+        "schemaVersion": "0.0.3",
+        "apiVersion": "3.2.0"
     },
     "pages": {
         "configuration": {
