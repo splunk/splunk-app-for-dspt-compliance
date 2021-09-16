@@ -21,7 +21,9 @@ jobs:
       - run: ucc-gen --ta-version 0.0.1
       - run: |
           mkdir dist
-          tar -zcvf dist/splunk-app-for-dspt-compliance-v0.0.1.tgz -C output splunk-app-for-dspt-compliance/
+          ls -la
+          ls -la output
+          tar -zcvf dist/splunk-app-for-dspt-compliance-v0.0.1.tgz -C output splunk_app_for_dspt_compliance/
       
       - uses: actions/upload-artifact@v2
         with:
