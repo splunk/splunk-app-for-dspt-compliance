@@ -24,22 +24,19 @@ From your Splunk instance Web Interface:
 * Browse to *Settings / Data Inputs*
 * Select *splunk_app_for_dspt_compliance* and provide the following info:
     * **Name** of the input
-    * **REST API** endpoint to fetch cyber alerts from
-    * **Enable Checkpoint** - to align with your duplication policy
-    * (Optional) **More settings** - to specify host, interval, index and sourcetype if different from default 
+    * **REST API** endpoint to fetch cyber alerts
+    * **Enable Checkpoint** - to align with your alerts duplication policy
+    * (Optional) **More settings** - to specify host, interval, index and sourcetype
 
 ### Usage
 TODO
 
 #### Troubleshooting
-Useful SPL searches meant to:
-* Verify NHS Cyber Alerts indexing
-`index=_internal nhs_cyberalerts.py`
+Useful SPL searches to:
+* Verify NHS Cyber Alerts indexing `index=_internal nhs_cyberalerts.py`
 
-* Verify the index has been populated with NHS Cyber Alerts 
+* Verify the index has been populated with NHS Cyber Alerts `index=main`
     > Please replace `main` with the index  specified in the configuration and make sure the time range is set on `All time`
-
-    `index=main`
 
 ## Contributing
 App has been developed by Kevin Pyart, Senior Splunk SE (UK Public Sector)
