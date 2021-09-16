@@ -22,6 +22,7 @@ jobs:
       - name: Bundling app
         run: |
           ucc-gen --ta-version 0.0.1
+          cp README.md output/splunk_app_for_dspt_compliance/
           mkdir dist
           tar -zcvf dist/splunk-app-for-dspt-compliance-v0.0.1.tgz -C output splunk_app_for_dspt_compliance/
       
@@ -30,10 +31,6 @@ jobs:
           name: app_tgz
           path: dist/splunk-app-for-dspt-compliance-v0.0.1.tgz
 
-      # - uses: actions/upload-artifact@v2
-      #   with:
-      #     name: ucc_out
-      #     path: output/splunk_app_for_dspt_compliance
 
   appinspect-cli:
     name: AppInspect CLI Validation
