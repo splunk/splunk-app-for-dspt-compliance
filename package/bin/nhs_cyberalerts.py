@@ -78,7 +78,7 @@ class NHS(smi.Script):
         scheme.description = 'Go to the add-on\'s configuration UI and configure modular inputs under the Inputs menu.'
         scheme.use_external_validation = True
         scheme.streaming_mode_xml = True
-        scheme.use_single_instance = True
+        scheme.use_single_instance = False
 
         scheme.add_argument(
             smi.Argument(
@@ -88,14 +88,6 @@ class NHS(smi.Script):
                 required_on_create=True
             )
         )
-
-        scheme.add_argument(
-            smi.Argument(
-                'interval',
-                required_on_create=True,
-            )
-        )
-
 
         #
         # Adding custom fields
@@ -162,7 +154,6 @@ class NHS(smi.Script):
         # Initializing EventWriter to ingest data in Splunk
         ew = smi.EventWriter()
 
-        logger.info("App name : {}".format(APP_NAME))
         #
         # Fetch Cyber Alerts
         #
