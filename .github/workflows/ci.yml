@@ -25,7 +25,7 @@ jobs:
           cp README.md output/splunk_app_for_dspt_compliance/
           mkdir dist
           chmod 644 output/splunk_app_for_dspt_compliance/appserver/static/js/build/* output/splunk_app_for_dspt_compliance/appserver/templates/* 
-          chmod 644 default/data/ui/views/configuration.xml default/data/ui/views/configuration.xml 
+          chmod 644 output/splunk_app_for_dspt_compliance/default/data/ui/views/configuration.xml output/splunk_app_for_dspt_compliance/default/data/ui/views/inputs.xml 
           tar -zcvf dist/splunk-app-for-dspt-compliance-v0.0.1.tgz -C output splunk_app_for_dspt_compliance/
       
       - uses: actions/upload-artifact@v2
