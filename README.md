@@ -3,19 +3,23 @@ This app has been created to assist in yearly compliance to the Data Security an
 The DSPT Audit applies, for example, to the UK National Health Service (NHS). 
 
 ## Features
-Data required to fully utilise this app:
-
-1.Active Directory
-2.Edge Firewalls
-3.Windows Event Logs
-4.Windows Update Logs
-5.Anti Virus Logs
-
-Pre requisits:
-Splunk Common Information Model App
-Accelerated Data Models required -
+* Recurrent retrieval of cyber alerts from NHS feeds to enrich data analysis
+* Dashboards to ease compliance with the DSPT for audit purposes:
+    * TODO list integrated dashboards and add a brief description (e.g. name, purpose)
 
 ## Getting Started
+### Requirements
+* [Splunk Common Information Model App](https://splunkbase.splunk.com/app/1621/)
+* Accelerated Data Models
+
+Data required to fully utilise this app:
+
+* Active Directory
+* Edge Firewalls
+* Windows Event Logs
+* Windows Update Logs
+* Anti Virus Logs
+
 ### Installation
 TODO
 
@@ -34,7 +38,6 @@ TODO
 #### Troubleshooting
 Useful SPL searches to:
 * Verify NHS Cyber Alerts indexing `index=_internal nhs_cyberalerts.py`
-
 * Verify the index has been populated with NHS Cyber Alerts `index=main`
     > Please replace `main` with the index  specified in the configuration and make sure the time range is set on `All time`
 
