@@ -6,15 +6,14 @@
         <h1>Splunk DSPT Compliance App</h1>
         <p>The Data Security and Protection Toolkit is an online self-assessment tool that allows organisations to measure their performance against the National Data Guardian’s 10 data security standards.</p>
         <p>This Splunk App aims to support organisations that have access to NHS patient data and systems provide exidence that they are practising good data security and that personal information is handled correctly.</p>
-        <p style="color:grey; font-size:100%">
-        <b>It is assumed that the following has been acheived to meet Ref.4.2.3 and Ref.6.3.3:</b>
-          <br/>
-        <b>1. All indexes have been configured with at least 6 months retention.</b>
-          <br/>
-        <b>2. Data Encryption at rest has been enabled (Splunk Cloud Customers within an AWS Region only).</b>
-          <br/>
-        <b>3. Security relevant log sources have been onboarded. Guidance can be sought from NCSC (https://www.ncsc.gov.uk/files/NCSC_SOC_Feeds.pdf).</b>
-        </p>
+        <div style="color:grey; font-size:100%">
+          <b>It is assumed that the following has been achieved to meet Ref.4.2.3 and Ref.6.3.3:</b>
+          <ol>
+            <li><b>All indexes have been configured with at least 6 months retention</b></li>
+            <li><b>Data Encryption at rest has been enabled (Splunk Cloud Customers within an AWS Region only)</b></li>
+            <li><b>Security relevant log sources have been onboarded. Guidance can be sought from NCSC (https://www.ncsc.gov.uk/files/NCSC_SOC_Feeds.pdf)</b></li>
+          </ol>
+        </div>
       </html>
     </panel>
   </row>
