@@ -24,8 +24,8 @@ jobs:
           ucc-gen --ta-version 0.0.1
           cp README.md output/splunk_app_for_dspt_compliance/
           mkdir dist
-          ls -la output/splunk_app_for_dspt_compliance/appserver/static/js/build
-          ls -la output/splunk_app_for_dspt_compliance/appserver/templates
+          chmod 644 output/splunk_app_for_dspt_compliance/appserver/static/js/build/* output/splunk_app_for_dspt_compliance/appserver/templates/* 
+          chmod 644 default/data/ui/views/configuration.xml default/data/ui/views/configuration.xml 
           tar -zcvf dist/splunk-app-for-dspt-compliance-v0.0.1.tgz -C output splunk_app_for_dspt_compliance/
       
       - uses: actions/upload-artifact@v2
