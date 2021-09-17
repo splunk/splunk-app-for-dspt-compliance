@@ -17,7 +17,7 @@ jobs:
       
       - name: Install dependencies
         run: |
-          python -m pip install --upgrade splunk-add-on-ucc-framework
+          python -m pip install --upgrade splunk-add-on-ucc-framework==5.5.5
       
       - name: Bundling app
         run: |
