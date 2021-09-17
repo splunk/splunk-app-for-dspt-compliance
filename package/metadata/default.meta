@@ -38,3 +38,9 @@ export = system
 [viewstates]
 access = read : [ * ], write : [ * ]
 export = system
+
+### MACROS
+
+[macros/default_index]
+access = read : [ * ], write : [ admin, power ]
+export = none
