@@ -10,60 +10,60 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
-      # - name: Setup Python
-      #   uses: actions/setup-python@v2
+      - name: Setup Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.9
+      
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install splunk-packaging-toolkit
+          pip install --upgrade splunk-add-on-ucc-framework
+      
+      # - run: |
+      #     echo "splunk-packaging-toolkit" > requirements_dev.txt
+      #     echo "splunk-add-on-ucc-framework" >> requirements_dev.txt
+
+      # - name: Build Package
+      #   id: uccgen
+      #   uses: splunk/addonfactory-ucc-generator-action@v1
       #   with:
-      #     python-version: 3.9
+      #     version: "0.0.1"
       
-      # - name: Install dependencies
+      # - name: "Finalize package"
       #   run: |
-      #     python -m pip install --upgrade pip
-      #     pip install splunk-packaging-toolkit
-      #     pip install --upgrade splunk-add-on-ucc-framework
-      - run: |
-          echo "splunk-packaging-toolkit" > requirements_dev.txt
-          echo "splunk-add-on-ucc-framework" >> requirements_dev.txt
-
-      - name: Build Package
-        id: uccgen
-        uses: splunk/addonfactory-ucc-generator-action@v1
-        with:
-          version: "0.0.1"
-      
-      - name: "Finalize package"
-        run: |
-          cp README.md output/splunk_app_for_dspt_compliance/
-          ls -la
-
-      - name: Slim Package
-        id: slim
-        uses: splunk/addonfactory-packaging-toolkit-action@v1
-        with:
-          source: ${{ steps.uccgen.outputs.OUTPUT }}
-      
-      - name: "Debug package"
-        run: |
-          cat output/splunk_app_for_dspt_compliance/app.manifest
-      
-      - name: artifact-splunk-unpacked
-        uses: actions/upload-artifact@v2
-        with:
-          name: app_tgz
-          path: ${{ steps.uccgen.outputs.OUTPUT }}**
-
-      # - name: Bundling app
-      #   run: |
-      #     ucc-gen --ta-version 0.0.1
       #     cp README.md output/splunk_app_for_dspt_compliance/
-      #     mkdir dist
-      #     slim package output/splunk_app_for_dspt_compliance -o dist/
-      #     ls -la dist/
+      #     ls -la
 
-      # - uses: actions/upload-artifact@v2
+      # - name: Slim Package
+      #   id: slim
+      #   uses: splunk/addonfactory-packaging-toolkit-action@v1
+      #   with:
+      #     source: ${{ steps.uccgen.outputs.OUTPUT }}
+      
+      # - name: "Debug package"
+      #   run: |
+      #     cat output/splunk_app_for_dspt_compliance/app.manifest
+      
+      # - name: artifact-splunk-unpacked
+      #   uses: actions/upload-artifact@v2
       #   with:
       #     name: app_tgz
-      #     path: dist/splunk-app-for-dspt-compliance-v0.0.1.tgz
+      #     path: ${{ steps.uccgen.outputs.OUTPUT }}**
 
+      - name: Bundling app
+        run: |
+          ucc-gen --ta-version 0.0.1
+          cp README.md output/splunk_app_for_dspt_compliance/
+          mkdir dist
+          slim package output/splunk_app_for_dspt_compliance -o dist/
+          ls -la dist/
+
+      - uses: actions/upload-artifact@v2
+        with:
+          name: app_tgz
+          path: dist/splunk-app-for-dspt-compliance*
 
   appinspect-cli:
     name: AppInspect CLI Validation
