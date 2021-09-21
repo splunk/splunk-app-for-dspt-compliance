@@ -21,8 +21,8 @@ jobs:
       #     pip install splunk-packaging-toolkit
       #     pip install --upgrade splunk-add-on-ucc-framework
       - run: |
-        echo "splunk-packaging-toolkit" > requirements_dev.txt
-        echo "splunk-add-on-ucc-framework" >> requirements_dev.txt
+          echo "splunk-packaging-toolkit" > requirements_dev.txt
+          echo "splunk-add-on-ucc-framework" >> requirements_dev.txt
 
       - name: Build Package
         id: uccgen
