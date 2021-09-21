@@ -71,11 +71,10 @@ class NHS(smi.Script):
 
     def __init__(self):
         super(NHS, self).__init__()
-        self.input_type = "splunk_app_for_dspt_compliance"
 
     def get_scheme(self):
-        scheme = smi.Scheme(self.input_type)
-        scheme.description = 'Go to the add-on\'s configuration UI and configure modular inputs under the Inputs menu.'
+        scheme = smi.Scheme("Splunk App for DSPT Compliance")
+        scheme.description = "Modular input to pull cyber alerts from NHS API"
         scheme.use_external_validation = True
         scheme.streaming_mode_xml = True
         scheme.use_single_instance = False
@@ -182,7 +181,7 @@ class NHS(smi.Script):
                     
                     event = smi.Event(data=json.dumps(alert),
                                 time=ev_time,
-                                source=self.input_type,
+                                source=CONF_NAME,
                                 sourcetype=input_items.get("sourcetype"), 
                                 index=input_items.get("index"))
                     
