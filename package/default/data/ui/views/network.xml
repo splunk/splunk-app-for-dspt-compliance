@@ -1,4 +1,4 @@
-<dashboard theme="dark">
+<dashboard theme="dark" version="1.1">
   <label>Network</label>
   <row>
     <panel>
