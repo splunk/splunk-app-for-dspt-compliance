@@ -51,12 +51,12 @@ jobs:
       - name: Setup Python
         uses: actions/setup-python@v2
         with:
-          python-version: "3.7"
+          python-version: 3.7
       
       - name: Install dependencies
         run: |
           sudo apt-get install libxml2-dev libxslt1-dev
-          python -m pip install http://download.splunk.com/misc/appinspect/splunk-appinspect-latest.tar.gz
+          python -m pip install splunk-appinspect
       
       - name: Run AppInspect
         run: |
