@@ -5,7 +5,7 @@
     "id": {
       "group": null,
       "name": "splunk_app_for_dspt_compliance",
-      "version": "1.0.0"
+      "version": "0.0.1"
     },
     "author": [
       {
