@@ -55,12 +55,11 @@ jobs:
       
       - name: Install dependencies
         run: |
-          sudo apt-get install libxml2-dev libxslt1-dev
           python -m pip install splunk-appinspect
       
       - name: Run AppInspect
         run: |
           app_package=$(ls -1 *gz | xargs basename)
-          splunk-appinspect inspect $app_package --output-file appinspect.json
+          splunk-appinspect inspect $app_package --output-file appinspect.json --log-level INFO
           exit `cat appinspect.json | jq '.summary.failure'`
 
