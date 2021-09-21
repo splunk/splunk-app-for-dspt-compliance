@@ -27,7 +27,7 @@
     "commonInformationModels": null,
     "license": {
       "name": "Splunk Software License Agreement",
-      "text": "license-eula.txt",
+      "text": null,
       "uri": "https://www.splunk.com/en_us/legal/splunk-software-license-agreement.html"
     },
     "privacyPolicy": {
@@ -37,7 +37,7 @@
     },
     "releaseNotes": {
       "name": "README",
-      "text": "./README.md",
+      "text": "README.md",
       "uri": null
     }
   },
