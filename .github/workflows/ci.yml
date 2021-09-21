@@ -30,6 +30,8 @@ jobs:
         run: |
           ucc-gen --ta-version ${{ steps.version.outputs.VERSION }}
           cp README.md output/splunk_app_for_dspt_compliance/
+          echo "Removing 'lib/*.dist-info' folders to prevent issues"
+          rm -rf output/splunk_app_for_dspt_compliance/lib/*.dist-info
           mkdir dist
           slim package output/splunk_app_for_dspt_compliance -o dist/
 
