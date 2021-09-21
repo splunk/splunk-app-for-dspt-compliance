@@ -26,12 +26,21 @@ jobs:
           python -m pip install --upgrade pip
           pip install --upgrade splunk-packaging-toolkit splunk-add-on-ucc-framework
 
-      - name: Bundling app
+      - name: Building app
         run: |
           ucc-gen --ta-version ${{ steps.version.outputs.VERSION }}
+      
+      - name: Finalizing app
+        run: |
           cp README.md output/splunk_app_for_dspt_compliance/
           echo "Removing 'lib/*.dist-info' folders to prevent issues"
           rm -rf output/splunk_app_for_dspt_compliance/lib/*.dist-info
+          echo "Fixing *nix file permissions"
+          chmod 644 output/splunk_app_for_dspt_compliance/appserver/static/js/build/* output/splunk_app_for_dspt_compliance/appserver/templates/* 
+          chmod 644 output/splunk_app_for_dspt_compliance/default/data/ui/views/configuration.xml output/splunk_app_for_dspt_compliance/default/data/ui/views/inputs.xml 
+      
+      - name: Packaging app
+        run: |
           mkdir dist
           slim package output/splunk_app_for_dspt_compliance -o dist/
 
