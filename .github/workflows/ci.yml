@@ -60,7 +60,7 @@ jobs:
       
       - name: Run AppInspect
         run: |
-          ls -la
-          splunk-appinspect inspect splunk_app_for_dspt_compliance-0.0.1.tar.gz --output-file appinspect.json
+          app_package=$(ls -1 *gz | xargs basename)
+          splunk-appinspect inspect $app_package --output-file appinspect.json
           exit `cat appinspect.json | jq '.summary.failure'`
 
