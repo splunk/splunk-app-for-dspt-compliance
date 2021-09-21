@@ -18,39 +18,7 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install splunk-packaging-toolkit
-          pip install --upgrade splunk-add-on-ucc-framework
-      
-      # - run: |
-      #     echo "splunk-packaging-toolkit" > requirements_dev.txt
-      #     echo "splunk-add-on-ucc-framework" >> requirements_dev.txt
-
-      # - name: Build Package
-      #   id: uccgen
-      #   uses: splunk/addonfactory-ucc-generator-action@v1
-      #   with:
-      #     version: "0.0.1"
-      
-      # - name: "Finalize package"
-      #   run: |
-      #     cp README.md output/splunk_app_for_dspt_compliance/
-      #     ls -la
-
-      # - name: Slim Package
-      #   id: slim
-      #   uses: splunk/addonfactory-packaging-toolkit-action@v1
-      #   with:
-      #     source: ${{ steps.uccgen.outputs.OUTPUT }}
-      
-      # - name: "Debug package"
-      #   run: |
-      #     cat output/splunk_app_for_dspt_compliance/app.manifest
-      
-      # - name: artifact-splunk-unpacked
-      #   uses: actions/upload-artifact@v2
-      #   with:
-      #     name: app_tgz
-      #     path: ${{ steps.uccgen.outputs.OUTPUT }}**
+          pip install --upgrade splunk-packaging-toolkit splunk-add-on-ucc-framework
 
       - name: Bundling app
         run: |
@@ -58,12 +26,11 @@ jobs:
           cp README.md output/splunk_app_for_dspt_compliance/
           mkdir dist
           slim package output/splunk_app_for_dspt_compliance -o dist/
-          ls -la dist/
 
       - uses: actions/upload-artifact@v2
         with:
           name: app_tgz
-          path: dist/splunk-app-for-dspt-compliance*
+          path: dist/splunk_app_for_dspt_compliance-0.0.1.tar.gz
 
   appinspect-cli:
     name: AppInspect CLI Validation
@@ -88,6 +55,6 @@ jobs:
       - name: Run AppInspect
         run: |
           ls -la
-          splunk-appinspect inspect splunk-app-for-dspt-compliance-0.0.1.tar.gz --output-file appinspect.json
+          splunk-appinspect inspect splunk_app_for_dspt_compliance-0.0.1.tar.gz --output-file appinspect.json
           exit `cat appinspect.json | jq '.summary.failure'`
 
