@@ -1,0 +1,40 @@
+# This is a basic workflow that is manually triggered
+
+name: Manual release
+
+on: 
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'New Version'
+        required: true
+        default: 'X.X.X'
+      changelog:
+        description: 'Changelog description'
+        required: true
+        default: 'NA'
+
+jobs:
+  find_version:
+    name: Find Version
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.get-version.outputs.version }}
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@v2
+      - name: Get version
+        id: get-version
+        run: |
+          VERSION=$(cat package/default/app.conf | grep -e ^version | awk '{print $3}')
+          echo "::set-output name=version::$VERSION"
+  tag_version:
+    needs: find_version
+    name: Tag Version
+    runs-on: ubuntu-latest
+    # Runs if version has changed
+    # if: ${{ github.event.inputs.version }} != ${{ needs.find_version.outputs.version }}
+    steps:
+      - name: Create tag
+        run: |
+          echo "Placeholder of: Creating tag ${{ github.event.inputs.version }} with message ${{ github.event.inputs.changelog }}"
