@@ -42,7 +42,8 @@ jobs:
       - name: Packaging app
         run: |
           mkdir dist
-          slim package output/splunk_app_for_dspt_compliance -o dist/
+          mv output/splunk_app_for_dspt_compliance output/splunk-app-for-dspt-compliance
+          slim package output/splunk-app-for-dspt-compliance -o dist/
 
       - uses: actions/upload-artifact@v2
         with:
