@@ -33,7 +33,7 @@ jobs:
     name: Tag Version
     runs-on: ubuntu-latest
     # Runs if version has changed
-    # if: ${{ github.event.inputs.version }} != ${{ needs.find_version.outputs.version }}
+    if: ${{ github.event.inputs.version }} != ${{ needs.find_version.outputs.version }}
     steps:
       - name: Create tag
         run: |
