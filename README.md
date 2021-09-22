@@ -5,7 +5,6 @@ The DSPT Audit applies, for example, to the UK National Health Service (NHS).
 ## Features
 * Recurrent retrieval of cyber alerts from NHS feeds to enrich data analysis
 * Dashboards to ease compliance with the DSPT for audit purposes:
-    * TODO complete table below opportunely
     
     | **Dashboard Name**     | **Description**                                     |
     |------------------------|-----------------------------------------------------|
@@ -13,7 +12,7 @@ The DSPT Audit applies, for example, to the UK National Health Service (NHS).
     | Cyber Alerts           | Cyber Alerts details                                |
     | Evidence Questionnaire | Enables users to fill in the evidence questionnaire |
     |                        |                                                     |
-    |                        |                                                     |
+    |         TODO           |     Keep filling this table                         |
 
 ## Getting Started
 ### Requirements
@@ -37,17 +36,19 @@ By default the app comes with a pre-configured and enabled input named `main`, t
 
 For customizations or additional feeds, from your Splunk instance Web Interface:
 * Browse to *Settings / Data Inputs*
-* Select *splunk_app_for_dspt_compliance* and provide the following info:
+* Select *Splunk App for DSPT Compliance* and provide the following info:
     * **Name** of the input
     * **REST API** endpoint to fetch cyber alerts
-    * **Enable Checkpoint** - to align with your alerts duplication policy
+    * **Enable Checkpoint** - to align with your events duplication policy
     * (Optional) **More settings** - to specify host, interval, index and sourcetype
 
 > Dear **admins**, if you decide to store cyber alerts in another index, please make sure you update the macro `default_index` with *Definition* such as `index=<YOUR_INDEX>`
 
 ### Usage
-* Data Inputs TODO
-* 
+Once installed, from your Splunk instance Web Interface, select the app *DSPT Compliance* and navigate through the dashboards to verify content.
+
+TODO
+> *Eventually add screenshots / more info about Questionnaire / anything else users might need to know when using the app*
 
 #### Troubleshooting
 Useful SPL searches to:
@@ -75,3 +76,4 @@ For Support please contact kpyart@splunk.com
 
 ## License
 TODO
+> *If planning to open source this app, recommendation is **Apache 2.0***
