@@ -13,7 +13,7 @@
   <view name="cyber_alerts" default='true' />
 
   <!-- Routing to Lookup Editor to fill in the questionnaire -->
-  <a href="/app/lookup_editor/lookup_edit?owner=nobody&amp;namespace=splunk-app-for-dspt-compliance&amp;lookup=evidence_questionnaire.csv&amp;type=csv">Evidence Questionnaire</a>
+  <a href="/app/lookup_editor/lookup_edit?owner=nobody&amp;namespace=splunk_app_for_dspt_compliance&amp;lookup=evidence_questionnaire.csv&amp;type=csv">Evidence Questionnaire</a>
   
   <collection label="Report">
     <collection label="Reports 1">
