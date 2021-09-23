@@ -14,8 +14,32 @@ on:
         required: false
 
 jobs:
+  tag-version:
+    name: Tag Version
+    runs-on: ubuntu-latest
+    outputs:
+      old_version: ${{ steps.bumpversion.outputs.old_ver }}
+      version: ${{ steps.bumpversion.outputs.new_ver }}
+    # Validate bump part before moving forward 
+    if: contains(['major', 'minor', 'patch'], ${{ github.event.inputs.bumpPart }})
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@v2
+
+      - name: Bump version and push tag
+        id: bumpversion
+        uses: jaumann/github-bumpversion-action@v0.0.7
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          DEFAULT_BUMP: ${{ github.event.inputs.bumpPart }}
+      - name: Push tags
+        run: |
+          remote_repo="https://${GITHUB_ACTOR}:${{ secrets.GITHUB_TOKEN }}@github.com/${GITHUB_REPOSITORY}.git"
+          git push "${remote_repo}" HEAD:${GITHUB_REF} --follow-tags --tags
+  
   build:
     name: Generate App Bundle
+    needs: tag-version
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
@@ -60,39 +84,9 @@ jobs:
           name: app_tgz
           path: dist/splunk_app_for_dspt_compliance-${{ steps.version.outputs.VERSION }}.tar.gz
 
-  tag-version:
-    name: Tag Version
-    runs-on: ubuntu-latest
-    outputs:
-      old_version: ${{ steps.bumpversion.outputs.old_ver }}
-      version: ${{ steps.bumpversion.outputs.new_ver }}
-    # Validate bump part before moving forward 
-    if: contains(['major', 'minor', 'patch'], ${{ github.event.inputs.bumpPart }})
-    steps:
-      - name: Checkout source
-        uses: actions/checkout@v2
-
-      - name: Bump version and push tag
-        id: bumpversion
-        uses: jaumann/github-bumpversion-action@v0.0.7
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          DEFAULT_BUMP: ${{ github.event.inputs.bumpPart }}
-      # - name: Testing bumping
-      #   run: |
-      #     echo "Old version: ${{ steps.bumpversion.outputs.old_ver }}"
-      #     echo "New version: ${{ steps.bumpversion.outputs.new_ver }}"
-      #     echo "Bump type: ${{ steps.bumpversion.outputs.part }}"
-      - name: Push tags
-        run: |
-          remote_repo="https://${GITHUB_ACTOR}:${{ secrets.GITHUB_TOKEN }}@github.com/${GITHUB_REPOSITORY}.git"
-          git push "${remote_repo}" HEAD:${GITHUB_REF} --follow-tags --tags
-
   release:
     name: Create Release
-    needs: 
-      - build
-      - tag-version
+    needs: build
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
@@ -116,9 +110,6 @@ jobs:
           fi
           echo "::set-output name=message::${content}" 
 
-      # - name: Testing changelog
-      #   run: echo "${{ steps.changelog.outputs.message }}"
-      
       - name: Create Release
         id: create_release
         uses: actions/create-release@v1
@@ -159,7 +150,7 @@ jobs:
 
   publish:
     needs: release
-    name: Deploy Release to Splunkbase
+    name: Upload to Splunkbase
     runs-on: ubuntu-latest
     steps:
       - name: Placeholder for publish
