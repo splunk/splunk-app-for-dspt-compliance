@@ -2,9 +2,6 @@ name: CI
 
 on:
   push:
-    branches-ignore:
-      # Do not push events to branches matching refs/heads/feature/cicd-release
-      - 'feature/cicd-release'
     paths-ignore:
       - '.github/workflows/manual-release.yml'
 
