@@ -1,40 +1,167 @@
 # This is a basic workflow that is manually triggered
 
-name: Manual release
+name: Manual Release
 
 on: 
   workflow_dispatch:
     inputs:
-      version:
-        description: 'New Version'
+      bumpPart:
+        description: 'Bump part (major, minor or patch)'
         required: true
-        default: 'X.X.X'
-      changelog:
-        description: 'Changelog description'
-        required: true
-        default: 'NA'
+        default: "minor"
+      notes:
+        description: 'Changelog notes'
+        required: false
 
 jobs:
-  find_version:
-    name: Find Version
+  build:
+    name: Generate App Bundle
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Setup Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.7
+      
+      - name: Get version
+        id: version
+        run: |
+          VERSION=$(cat package/default/app.conf | grep -e ^version | awk '{print $3}')
+          echo "::set-output name=VERSION::$VERSION"
+      
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install --upgrade splunk-packaging-toolkit splunk-add-on-ucc-framework
+
+      - name: Building app
+        run: |
+          ucc-gen --ta-version ${{ steps.version.outputs.VERSION }}
+      
+      - name: Finalizing app [Temporary Ops]
+        run: |
+          cp README.md output/splunk_app_for_dspt_compliance/
+          echo "Removing 'lib/*.dist-info' folders to prevent issues"
+          rm -rf output/splunk_app_for_dspt_compliance/lib/*.dist-info
+          echo "Fixing *nix file permissions"
+          chmod 644 output/splunk_app_for_dspt_compliance/appserver/static/js/build/* output/splunk_app_for_dspt_compliance/appserver/templates/* 
+          chmod 644 output/splunk_app_for_dspt_compliance/default/data/ui/views/configuration.xml output/splunk_app_for_dspt_compliance/default/data/ui/views/inputs.xml 
+      
+      - name: Packaging app
+        run: |
+          mkdir dist
+          slim package output/splunk_app_for_dspt_compliance -o dist/
+
+      - uses: actions/upload-artifact@v2
+        with:
+          name: app_tgz
+          path: dist/splunk_app_for_dspt_compliance-${{ steps.version.outputs.VERSION }}.tar.gz
+
+  tag-version:
+    name: Tag Version
     runs-on: ubuntu-latest
     outputs:
-      version: ${{ steps.get-version.outputs.version }}
+      old_version: ${{ steps.bumpversion.outputs.old_ver }}
+      version: ${{ steps.bumpversion.outputs.new_ver }}
+    # Validate bump part before moving forward 
+    if: contains(['major', 'minor', 'patch'], ${{ github.event.inputs.bumpPart }})
     steps:
       - name: Checkout source
         uses: actions/checkout@v2
-      - name: Get version
-        id: get-version
+
+      - name: Bump version and push tag
+        id: bumpversion
+        uses: jaumann/github-bumpversion-action@v0.0.7
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          DEFAULT_BUMP: ${{ github.event.inputs.bumpPart }}
+      # - name: Testing bumping
+      #   run: |
+      #     echo "Old version: ${{ steps.bumpversion.outputs.old_ver }}"
+      #     echo "New version: ${{ steps.bumpversion.outputs.new_ver }}"
+      #     echo "Bump type: ${{ steps.bumpversion.outputs.part }}"
+      - name: Push tags
         run: |
-          VERSION=$(cat package/default/app.conf | grep -e ^version | awk '{print $3}')
-          echo "::set-output name=version::$VERSION"
-  tag_version:
-    needs: find_version
-    name: Tag Version
+          remote_repo="https://${GITHUB_ACTOR}:${{ secrets.GITHUB_TOKEN }}@github.com/${GITHUB_REPOSITORY}.git"
+          git push "${remote_repo}" HEAD:${GITHUB_REF} --follow-tags --tags
+
+  release:
+    name: Create Release
+    needs: 
+      - build
+      - tag-version
     runs-on: ubuntu-latest
-    # Runs if version has changed
-    if: ${{ github.event.inputs.version }} != ${{ needs.find_version.outputs.version }}
     steps:
-      - name: Create tag
+      - name: Checkout code
+        uses: actions/checkout@v2
+      
+      - name: Fetch all tags
         run: |
-          echo "Placeholder of: Creating tag ${{ github.event.inputs.version }} with message ${{ github.event.inputs.changelog }}"
+          git fetch --unshallow --tags
+
+      - name: Build changelog message
+        id: changelog
+        run: |
+          tags_no=$(git tag -l | wc -l)
+          if [[ "${tags_no}" > 1 ]]; then 
+            content=$(git log v${{ needs.tag-version.outputs.old_version }}..v${{ needs.tag-version.outputs.version }} --oneline --decorate --pretty=format:"%s" | tail -n 1)
+            content="${content//'%'/%25}"
+            content="${content//$'\n'/%0A}"
+            content="${content//$'\r'/%0D}"
+          else
+            content="Initial release"
+          fi
+          echo "::set-output name=message::${content}" 
+
+      # - name: Testing changelog
+      #   run: echo "${{ steps.changelog.outputs.message }}"
+      
+      - name: Create Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: v${{ needs.tag-version.outputs.version }}
+          release_name: v${{ needs.tag-version.outputs.version }}
+          body: |
+            ## Changelog
+            ${{ github.event.inputs.notes }}
+
+            ${{ steps.changelog.outputs.message }}
+          draft: false
+          prerelease: false
+
+      - name: Download artifact
+        uses: actions/download-artifact@v2
+        with:
+          name: app_tgz
+      
+      - name: Get artifact name
+        id: app-name
+        run: |
+          app_package=$(ls -1 *gz | xargs basename)
+          echo "::set-output name=package::${app_package}"
+      
+      - name: Upload Release Asset
+        id: upload-release-asset 
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ${{ steps.app-name.outputs.package }}
+          asset_name: ${{ steps.app-name.outputs.package }}
+          asset_content_type: application/tgz
+
+  publish:
+    needs: release
+    name: Deploy Release to Splunkbase
+    runs-on: ubuntu-latest
+    steps:
+      - name: Placeholder for publish
+        run: |
+          echo "Placeholder for Splunkbase upload"
