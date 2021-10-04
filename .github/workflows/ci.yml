@@ -4,6 +4,9 @@ on:
   push:
     paths-ignore:
       - '.github/workflows/manual-release.yml'
+  pull_request:
+    branches:
+      - master
 
 jobs:
   ucc-gen:
