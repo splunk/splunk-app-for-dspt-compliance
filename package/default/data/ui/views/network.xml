@@ -1,13 +1,22 @@
-<dashboard theme="dark" version="1.1">
+<form theme="dark" version="1.1">
   <label>Network</label>
+  <fieldset submitButton="false">
+    <input type="time" token="GlobalTime" searchWhenChanged="true">
+      <label></label>
+      <default>
+        <earliest>-30d@d</earliest>
+        <latest>now</latest>
+      </default>
+    </input>
+  </fieldset>
   <row>
     <panel>
       <title>Logged Traffic Volume</title>
       <single>
         <search>
           <query>| tstats summariesonly=true allow_old_summaries=true sum(All_Traffic.bytes) as volume from datamodel=Network_Traffic.All_Traffic by _time span=1day | eval volume=volume/1024/1024/1024</query>
-          <earliest>-30d@d</earliest>
-          <latest>now</latest>
+          <earliest>$GlobalTime.earliest$</earliest>
+          <latest>$GlobalTime.latest$</latest>
           <sampleRatio>1</sampleRatio>
         </search>
         <option name="colorBy">trend</option>
@@ -25,8 +34,8 @@
         <option name="trellis.size">medium</option>
         <option name="trendColorInterpretation">standard</option>
         <option name="trendDisplayMode">absolute</option>
-        <option name="trendInterval">-24h</option>
-        <option name="underLabel">Compared to 24 hours before</option>
+        <option name="trendInterval">-7d</option>
+        <option name="underLabel">Compared to 7 days before</option>
         <option name="unit">GB</option>
         <option name="unitPosition">after</option>
         <option name="useColors">1</option>
@@ -40,8 +49,8 @@
       <single>
         <search>
           <query>| tstats summariesonly=true allow_old_summaries=true dc(All_Traffic.src_ip) from datamodel=Network_Traffic where All_Traffic.src_ip!=10.0.0.0/8 All_Traffic.src_ip!=192.168.0.0/16 All_Traffic.src_ip!=172.16.0.0/12</query>
-          <earliest>-24h@h</earliest>
-          <latest>now</latest>
+          <earliest>$GlobalTime.earliest$</earliest>
+          <latest>$GlobalTime.latest$</latest>
           <sampleRatio>1</sampleRatio>
         </search>
         <option name="colorBy">value</option>
@@ -69,8 +78,8 @@
       <single>
         <search>
           <query>| tstats summariesonly=true allow_old_summaries=true dc(All_Traffic.dest_ip) from datamodel=Network_Traffic where All_Traffic.dest_ip!=10.0.0.0/8 All_Traffic.dest_ip!=192.168.0.0/16 All_Traffic.dest_ip!=172.16.0.0/12</query>
-          <earliest>-24h@h</earliest>
-          <latest>now</latest>
+          <earliest>$GlobalTime.earliest$</earliest>
+          <latest>$GlobalTime.latest$</latest>
           <sampleRatio>1</sampleRatio>
         </search>
         <option name="colorBy">value</option>
@@ -99,11 +108,11 @@
       <title>Allowed Traffic by Protocol</title>
       <chart>
         <search>
-          <query>| tstats summariesonly=true allow_old_summaries=true prestats=true count from datamodel=Network_Traffic.All_Traffic where All_Traffic.action=allowed by _time, All_Traffic.transport span=10m 
+          <query>| tstats summariesonly=true allow_old_summaries=true prestats=true count from datamodel=Network_Traffic.All_Traffic where All_Traffic.action=allowed by _time, All_Traffic.transport
 | rename "All_Traffic.*" as "*" 
 | timechart minspan=10m count by transport</query>
-          <earliest>-24h@h</earliest>
-          <latest>now</latest>
+          <earliest>$GlobalTime.earliest$</earliest>
+          <latest>$GlobalTime.latest$</latest>
           <sampleRatio>1</sampleRatio>
         </search>
         <option name="charting.axisLabelsX.majorLabelStyle.overflowMode">ellipsisNone</option>
@@ -145,11 +154,11 @@
       <title>All Traffic by Action</title>
       <chart>
         <search>
-          <query>| tstats summariesonly=true allow_old_summaries=true prestats=true count from datamodel=Network_Traffic.All_Traffic by _time, All_Traffic.action span=10m 
+          <query>| tstats summariesonly=true allow_old_summaries=true prestats=true count from datamodel=Network_Traffic.All_Traffic by _time, All_Traffic.action
 | timechart minspan=10m count by All_Traffic.action 
 | rename "All_Traffic.action" as action</query>
-          <earliest>-24h@h</earliest>
-          <latest>now</latest>
+          <earliest>$GlobalTime.earliest$</earliest>
+          <latest>$GlobalTime.latest$</latest>
           <sampleRatio>1</sampleRatio>
         </search>
         <option name="charting.axisLabelsX.majorLabelStyle.overflowMode">ellipsisNone</option>
@@ -191,9 +200,9 @@
       <title>Intrusion Detection - Attack Severity over Time</title>
       <chart>
         <search>
-          <query>| tstats summariesonly=true allow_old_summaries=true count from datamodel=Intrusion_Detection.IDS_Attacks where IDS_Attacks.severity="*" by _time, IDS_Attacks.severity span=10m | rename "IDS_Attacks.*" as "*" | timechart minspan=10m count by severity</query>
-          <earliest>-24h@h</earliest>
-          <latest>now</latest>
+          <query>| tstats summariesonly=true allow_old_summaries=true count from datamodel=Intrusion_Detection.IDS_Attacks where IDS_Attacks.severity="*" by _time, IDS_Attacks.severity | rename "IDS_Attacks.*" as "*" | timechart minspan=10m count by severity</query>
+          <earliest>$GlobalTime.earliest$</earliest>
+          <latest>$GlobalTime.latest$</latest>
           <sampleRatio>1</sampleRatio>
         </search>
         <option name="charting.axisLabelsX.majorLabelStyle.overflowMode">ellipsisNone</option>
@@ -240,8 +249,8 @@
         <title>ref:6.2.5</title>
         <search>
           <query>| tstats summariesonly=true allow_old_summaries=true count from datamodel=Network_Traffic.All_Traffic where All_Traffic.action=allowed</query>
-          <earliest>-24h@h</earliest>
-          <latest>now</latest>
+          <earliest>$GlobalTime.earliest$</earliest>
+          <latest>$GlobalTime.latest$</latest>
           <sampleRatio>1</sampleRatio>
         </search>
         <option name="colorBy">value</option>
@@ -270,8 +279,8 @@
         <title>ref:6.2.5, 9.7.3</title>
         <search>
           <query>| tstats summariesonly=true allow_old_summaries=true count from datamodel=Network_Traffic.All_Traffic where (All_Traffic.action=blocked OR All_Traffic.action=dropped)</query>
-          <earliest>-24h@h</earliest>
-          <latest>now</latest>
+          <earliest>$GlobalTime.earliest$</earliest>
+          <latest>$GlobalTime.latest$</latest>
           <sampleRatio>1</sampleRatio>
         </search>
         <option name="colorBy">value</option>
@@ -303,8 +312,8 @@
           <query>| tstats summariesonly=true allow_old_summaries=true count from datamodel=Network_Traffic.All_Traffic where All_Traffic.action=allowed by All_Traffic.src, All_Traffic.app
 |  rename "All_Traffic.*" as "*" |  iplocation src 
 |  geostats sum(count) by app</query>
-          <earliest>-24h@h</earliest>
-          <latest>now</latest>
+          <earliest>$GlobalTime.earliest$</earliest>
+          <latest>$GlobalTime.latest$</latest>
           <sampleRatio>1</sampleRatio>
         </search>
         <option name="drilldown">none</option>
@@ -344,8 +353,8 @@
 |  rename "All_Traffic.*" as "*" 
 |  iplocation src 
 |  geostats sum(count) by dest_port</query>
-          <earliest>-24h@h</earliest>
-          <latest>now</latest>
+          <earliest>$GlobalTime.earliest$</earliest>
+          <latest>$GlobalTime.latest$</latest>
           <sampleRatio>1</sampleRatio>
         </search>
         <option name="drilldown">none</option>
@@ -386,8 +395,8 @@
         <search>
           <query>| tstats local=false summariesonly=true allow_old_summaries=true count from datamodel=Intrusion_Detection.IDS_Attacks where IDS_Attacks.severity="*" IDS_Attacks.action!=allowed by IDS_Attacks.src, IDS_Attacks.signature  | rename "IDS_Attacks.*" as "*" 
 | iplocation src | geostats sum(count) by signature globallimit=20 binspanlat=10 binspanlong=10</query>
-          <earliest>-24h@h</earliest>
-          <latest>now</latest>
+          <earliest>$GlobalTime.earliest$</earliest>
+          <latest>$GlobalTime.latest$</latest>
           <sampleRatio>1</sampleRatio>
         </search>
         <option name="drilldown">none</option>
@@ -413,6 +422,7 @@
         <option name="mapping.tileLayer.minZoom">0</option>
         <option name="mapping.tileLayer.tileOpacity">1</option>
         <option name="mapping.type">marker</option>
+        <option name="refresh.display">progressbar</option>
         <option name="trellis.enabled">0</option>
         <option name="trellis.scales.shared">1</option>
         <option name="trellis.size">medium</option>
@@ -427,14 +437,15 @@
         <search>
           <query>| tstats summariesonly=true allow_old_summaries=true count as triggered from datamodel=Network_Traffic.All_Traffic by All_Traffic.rule
 | rename "All_Traffic.*" as "*"</query>
-          <earliest>-24h@h</earliest>
-          <latest>now</latest>
+          <earliest>$GlobalTime.earliest$</earliest>
+          <latest>$GlobalTime.latest$</latest>
           <sampleRatio>1</sampleRatio>
         </search>
         <option name="count">5</option>
         <option name="dataOverlayMode">none</option>
         <option name="drilldown">cell</option>
         <option name="percentagesRow">false</option>
+        <option name="refresh.display">progressbar</option>
         <option name="rowNumbers">false</option>
         <option name="totalsRow">false</option>
         <option name="wrap">false</option>
@@ -455,14 +466,15 @@
         <search>
           <query>| tstats summariesonly=true allow_old_summaries=true count from datamodel=Change.All_Changes where nodename=All_Changes.Network_Changes by All_Changes.dvc 
 | rename "All_Changes.dvc" as dvc, "All_Changes.*" as "*"</query>
-          <earliest>-24h@h</earliest>
-          <latest>now</latest>
+          <earliest>$GlobalTime.earliest$</earliest>
+          <latest>$GlobalTime.latest$</latest>
           <sampleRatio>1</sampleRatio>
         </search>
         <option name="count">20</option>
         <option name="dataOverlayMode">none</option>
         <option name="drilldown">none</option>
         <option name="percentagesRow">false</option>
+        <option name="refresh.display">progressbar</option>
         <option name="rowNumbers">false</option>
         <option name="totalsRow">false</option>
         <option name="wrap">true</option>
@@ -477,11 +489,11 @@
       <chart>
         <title>ref:9.5.3</title>
         <search>
-          <query>| tstats prestats=true local=false summariesonly=true allow_old_summaries=true count from datamodel=Change.All_Changes where nodename=All_Changes.Network_Changes by _time,All_Changes.action span=10m 
+          <query>| tstats prestats=true local=false summariesonly=true allow_old_summaries=true count from datamodel=Change.All_Changes where nodename=All_Changes.Network_Changes by _time,All_Changes.action
 | timechart minspan=10m useother=true count by All_Changes.action 
 | rename "All_Changes.action" as action, "All_Changes.*" as "*"</query>
-          <earliest>-24h@h</earliest>
-          <latest>now</latest>
+          <earliest>$GlobalTime.earliest$</earliest>
+          <latest>$GlobalTime.latest$</latest>
           <sampleRatio>1</sampleRatio>
         </search>
         <option name="charting.axisLabelsX.majorLabelStyle.overflowMode">ellipsisNone</option>
@@ -512,6 +524,7 @@
         <option name="charting.legend.mode">standard</option>
         <option name="charting.legend.placement">right</option>
         <option name="charting.lineWidth">2</option>
+        <option name="refresh.display">progressbar</option>
         <option name="trellis.enabled">0</option>
         <option name="trellis.scales.shared">1</option>
         <option name="trellis.size">medium</option>
@@ -525,8 +538,8 @@
         <title>ref:9.5.3</title>
         <search>
           <query>| from datamodel:"Change"."Network_Changes" | search   | head 10</query>
-          <earliest>-24h@h</earliest>
-          <latest>now</latest>
+          <earliest>$GlobalTime.earliest$</earliest>
+          <latest>$GlobalTime.latest$</latest>
           <sampleRatio>1</sampleRatio>
         </search>
         <option name="count">20</option>
@@ -534,6 +547,7 @@
         <option name="list.wrap">1</option>
         <option name="maxLines">5</option>
         <option name="raw.drilldown">full</option>
+        <option name="refresh.display">progressbar</option>
         <option name="rowNumbers">0</option>
         <option name="table.drilldown">all</option>
         <option name="table.sortDirection">asc</option>
@@ -542,4 +556,4 @@
       </event>
     </panel>
   </row>
-</dashboard>
+</form>

@@ -1,5 +1,14 @@
-<dashboard theme="dark" version="1.1">
+<form theme="dark" version="1.1">
   <label>VPN</label>
+  <fieldset submitButton="false">
+    <input type="time" token="GlobalTime" searchWhenChanged="true">
+      <label></label>
+      <default>
+        <earliest>-30d@d</earliest>
+        <latest>now</latest>
+      </default>
+    </input>
+  </fieldset>
   <row>
     <panel>
       <title>Users Connected Via VPN</title>
@@ -7,14 +16,15 @@
         <title>ref:9.5.8</title>
         <search>
           <query>| tstats summariesonly=true allow_old_summaries=true dc(All_Sessions.user) from datamodel=Network_Sessions.All_Sessions where nodename=All_Sessions.VPN</query>
-          <earliest>-24h@h</earliest>
-          <latest>now</latest>
+          <earliest>$GlobalTime.earliest$</earliest>
+          <latest>$GlobalTime.latest$</latest>
           <sampleRatio>1</sampleRatio>
         </search>
         <option name="colorMode">block</option>
         <option name="drilldown">none</option>
         <option name="rangeColors">["0x0b45a2","0x0b45a2"]</option>
         <option name="rangeValues">[0]</option>
+        <option name="refresh.display">progressbar</option>
         <option name="underLabel">Last 24 hours</option>
         <option name="useColors">1</option>
       </single>
@@ -26,9 +36,9 @@
       <single>
         <title>ref:9.5.8</title>
         <search>
-          <query>| tstats summariesonly=true allow_old_summaries=true count from datamodel=Network_Sessions.All_Sessions where nodename=All_Sessions.VPN NOT All_Sessions.action IN (drop*,fail*,block*) All_Sessions.user="$user1$"</query>
-          <earliest>-24h@h</earliest>
-          <latest>now</latest>
+          <query>| tstats summariesonly=true allow_old_summaries=true count from datamodel=Network_Sessions.All_Sessions where nodename=All_Sessions.VPN NOT All_Sessions.action IN (drop*,fail*,block*) All_Sessions.user=*</query>
+          <earliest>$GlobalTime.earliest$</earliest>
+          <latest>$GlobalTime.latest$</latest>
           <sampleRatio>1</sampleRatio>
         </search>
         <option name="colorMode">none</option>
@@ -46,9 +56,9 @@
       <single>
         <title>ref:9.5.8</title>
         <search>
-          <query>| tstats summariesonly=true allow_old_summaries=true count from datamodel=Network_Sessions.All_Sessions where nodename=All_Sessions.VPN All_Sessions.action IN (drop*,fail*,block*) All_Sessions.user=$user1$</query>
-          <earliest>-24h@h</earliest>
-          <latest>now</latest>
+          <query>| tstats summariesonly=true allow_old_summaries=true count from datamodel=Network_Sessions.All_Sessions where nodename=All_Sessions.VPN All_Sessions.action IN (drop*,fail*,block*) All_Sessions.user=*</query>
+          <earliest>$GlobalTime.earliest$</earliest>
+          <latest>$GlobalTime.latest$</latest>
           <sampleRatio>1</sampleRatio>
         </search>
         <option name="colorMode">none</option>
@@ -86,8 +96,8 @@
     [| eval latitude=prev_lat 
     | eval longitude=prev_lon] 
 | geostats latfield=latitude longfield=longitude count by user binspanlat=5 binspanlong=5</query>
-          <earliest>-24h@h</earliest>
-          <latest>now</latest>
+          <earliest>$GlobalTime.earliest$</earliest>
+          <latest>$GlobalTime.latest$</latest>
           <sampleRatio>1</sampleRatio>
         </search>
         <option name="drilldown">none</option>
@@ -103,4 +113,4 @@
       </map>
     </panel>
   </row>
-</dashboard>
+</form>

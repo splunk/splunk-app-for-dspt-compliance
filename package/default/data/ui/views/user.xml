@@ -1,13 +1,22 @@
-<dashboard theme="dark" version="1.1">
+<form theme="dark" version="1.1">
   <label>User</label>
+  <fieldset submitButton="false">
+    <input type="time" token="GlobalTime" searchWhenChanged="true">
+      <label></label>
+      <default>
+        <earliest>-30d@d</earliest>
+        <latest>now</latest>
+      </default>
+    </input>
+  </fieldset>
   <row>
     <panel>
       <title>Successful Authentications</title>
       <single>
         <search>
           <query>| tstats summariesonly=true allow_old_summaries=true count from datamodel=Authentication.Authentication where Authentication.action=success by _time span=1d</query>
-          <earliest>-30d@d</earliest>
-          <latest>now</latest>
+          <earliest>$GlobalTime.earliest$</earliest>
+          <latest>$GlobalTime.latest$</latest>
           <sampleRatio>1</sampleRatio>
         </search>
         <option name="colorBy">trend</option>
@@ -37,8 +46,8 @@
       <single>
         <search>
           <query>| tstats summariesonly=true allow_old_summaries=true count from datamodel=Authentication.Authentication where Authentication.action=failure by _time span=1d</query>
-          <earliest>-30d@d</earliest>
-          <latest>now</latest>
+          <earliest>$GlobalTime.earliest$</earliest>
+          <latest>$GlobalTime.latest$</latest>
           <sampleRatio>1</sampleRatio>
         </search>
         <option name="colorBy">trend</option>
@@ -72,8 +81,8 @@
 | chart last(count) over user by action 
 | where success&gt;0 and failure&gt;20 
 | stats dc(user)</query>
-          <earliest>-24h@h</earliest>
-          <latest>now</latest>
+          <earliest>$GlobalTime.earliest$</earliest>
+          <latest>$GlobalTime.latest$</latest>
           <sampleRatio>1</sampleRatio>
         </search>
         <option name="colorBy">value</option>
@@ -82,6 +91,7 @@
         <option name="numberPrecision">0</option>
         <option name="rangeColors">["0x53a051","0x0877a6","0xf8be34","0xf1813f","0xdc4e41"]</option>
         <option name="rangeValues">[0,30,70,100]</option>
+        <option name="refresh.display">progressbar</option>
         <option name="showSparkline">1</option>
         <option name="showTrendIndicator">1</option>
         <option name="trellis.enabled">0</option>
@@ -102,13 +112,13 @@
         <title>ref:4.2.4</title>
         <search>
           <query>| tstats summariesonly=true allow_old_summaries=true count from datamodel=Authentication.Authentication where Authentication.action=* by Authentication.user, Authentication.action | search Authentication.user IN (admin,administrator,sa,guest,root,mysql-root) | rename Authentication.* as *</query>
-          <earliest>-30d@d</earliest>
-          <latest>now</latest>
+          <earliest>$GlobalTime.earliest$</earliest>
+          <latest>$GlobalTime.latest$</latest>
           <sampleRatio>1</sampleRatio>
         </search>
         <option name="count">20</option>
         <option name="dataOverlayMode">none</option>
-        <option name="drilldown">none</option>
+        <option name="drilldown">cell</option>
         <option name="percentagesRow">false</option>
         <option name="rowNumbers">false</option>
         <option name="totalsRow">false</option>
@@ -116,6 +126,9 @@
         <format type="color" field="action">
           <colorPalette type="map">{"success":#DC4E41}</colorPalette>
         </format>
+        <drilldown>
+          <link target="_blank">/app/splunk_app_for_dspt_compliance/report?s=4.2.4%20-%20Default%20Account%20Use</link>
+        </drilldown>
       </table>
     </panel>
     <panel>
@@ -124,14 +137,15 @@
         <title>ref:4.2.4</title>
         <search>
           <query>| tstats summariesonly=true allow_old_summaries=true latest(_time) as last_login from datamodel=Authentication.Authentication where Authentication.action=* by Authentication.user | rename "Authentication.*" as "*" | eval days_ago=(now()-last_login)/3600/24 | sort - days_ago | where days_ago &gt; 30 | fields - last_login | rename days_ago AS "last succesful login"</query>
-          <earliest>-1y</earliest>
-          <latest>now</latest>
+          <earliest>$GlobalTime.earliest$</earliest>
+          <latest>$GlobalTime.latest$</latest>
           <sampleRatio>1</sampleRatio>
         </search>
         <option name="count">5</option>
         <option name="dataOverlayMode">none</option>
         <option name="drilldown">cell</option>
         <option name="percentagesRow">false</option>
+        <option name="refresh.display">progressbar</option>
         <option name="rowNumbers">false</option>
         <option name="totalsRow">false</option>
         <option name="wrap">true</option>
@@ -161,6 +175,9 @@
           <colorPalette type="minMidMax" maxColor="#0B45A2" minColor="#FFFFFF"></colorPalette>
           <scale type="minMidMax"></scale>
         </format>
+        <drilldown>
+          <link target="_blank">/app/splunk_app_for_dspt_compliance/report?s=4.2.4%20-%20Dormant%20Accounts</link>
+        </drilldown>
       </table>
     </panel>
     <panel>
@@ -175,14 +192,15 @@
 | sort -failure 
 | rename failure as failures 
 | table user, failures, success</query>
-          <earliest>-24h@h</earliest>
-          <latest>now</latest>
+          <earliest>$GlobalTime.earliest$</earliest>
+          <latest>$GlobalTime.latest$</latest>
           <sampleRatio>1</sampleRatio>
         </search>
         <option name="count">5</option>
         <option name="dataOverlayMode">none</option>
         <option name="drilldown">none</option>
         <option name="percentagesRow">false</option>
+        <option name="refresh.display">progressbar</option>
         <option name="rowNumbers">false</option>
         <option name="totalsRow">false</option>
         <option name="wrap">true</option>
@@ -199,16 +217,17 @@
       <single>
         <search>
           <query>`wineventlog-index` EventCode=4740 | stats dc(user)</query>
-          <earliest>-24h@h</earliest>
-          <latest>now</latest>
+          <earliest>$GlobalTime.earliest$</earliest>
+          <latest>$GlobalTime.latest$</latest>
           <sampleRatio>1</sampleRatio>
         </search>
         <option name="colorBy">value</option>
         <option name="colorMode">block</option>
-        <option name="drilldown">none</option>
+        <option name="drilldown">all</option>
         <option name="numberPrecision">0</option>
         <option name="rangeColors">["0x0b45a2","0x0b45a2"]</option>
         <option name="rangeValues">[0]</option>
+        <option name="refresh.display">progressbar</option>
         <option name="showSparkline">1</option>
         <option name="showTrendIndicator">1</option>
         <option name="trellis.enabled">0</option>
@@ -220,6 +239,9 @@
         <option name="unitPosition">after</option>
         <option name="useColors">1</option>
         <option name="useThousandSeparators">1</option>
+        <drilldown>
+          <link target="_blank">/app/splunk_app_for_dspt_compliance/report?s=4.5.2%20-%20Account%20Lockouts</link>
+        </drilldown>
       </single>
     </panel>
   </row>
@@ -228,10 +250,10 @@
       <title>Successful and Failed Logons</title>
       <chart>
         <search>
-          <query>| tstats prestats=true summariesonly=true allow_old_summaries=true count from datamodel=Authentication.Authentication where Authentication.action=* Authentication.action!=unknown by _time, Authentication.action span=10m 
+          <query>| tstats prestats=true summariesonly=true allow_old_summaries=true count from datamodel=Authentication.Authentication where Authentication.action=* Authentication.action!=unknown by _time, Authentication.action
 | timechart minspan=10m count by Authentication.action</query>
-          <earliest>-24h@h</earliest>
-          <latest>now</latest>
+          <earliest>$GlobalTime.earliest$</earliest>
+          <latest>$GlobalTime.latest$</latest>
           <sampleRatio>1</sampleRatio>
         </search>
         <option name="charting.axisLabelsX.majorLabelStyle.overflowMode">ellipsisNone</option>
@@ -279,8 +301,8 @@
         <title>ref:4.2.4</title>
         <search>
           <query>| tstats  summariesonly=t allow_old_summaries=t dc(Authentication.user) from datamodel=Authentication where nodename="Authentication.Privileged_Authentication"</query>
-          <earliest>-24h@h</earliest>
-          <latest>now</latest>
+          <earliest>$GlobalTime.earliest$</earliest>
+          <latest>$GlobalTime.latest$</latest>
           <sampleRatio>1</sampleRatio>
         </search>
         <option name="colorBy">value</option>
@@ -313,8 +335,8 @@
 | eventstats earliest(_time) as earliest by user 
 | where earliest &gt;= relative_time(now(), "-24h") 
 | stats count</query>
-          <earliest>-30d@d</earliest>
-          <latest>now</latest>
+          <earliest>$GlobalTime.earliest$</earliest>
+          <latest>$GlobalTime.latest$</latest>
           <sampleRatio>1</sampleRatio>
         </search>
         <option name="colorBy">value</option>
@@ -347,14 +369,15 @@
           <query>| tstats summariesonly=true allow_old_summaries=true count from datamodel=Authentication where nodename="Authentication.Privileged_Authentication" by _time, Authentication.user span=10m 
 | rename Authentication.user as user 
 | stats sparkline(sum(count),30m) as sparkline, sum(count) as count by user | sort - count</query>
-          <earliest>-24h@h</earliest>
-          <latest>now</latest>
+          <earliest>$GlobalTime.earliest$</earliest>
+          <latest>$GlobalTime.latest$</latest>
           <sampleRatio>1</sampleRatio>
         </search>
         <option name="count">5</option>
         <option name="dataOverlayMode">none</option>
         <option name="drilldown">cell</option>
         <option name="percentagesRow">false</option>
+        <option name="refresh.display">progressbar</option>
         <option name="rowNumbers">false</option>
         <option name="totalsRow">false</option>
         <option name="wrap">true</option>
@@ -375,8 +398,8 @@
 | where earliest &gt;= relative_time(now(), "-24h") 
 | dedup user, dest 
 | table user, dest</query>
-          <earliest>-30d@d</earliest>
-          <latest>now</latest>
+          <earliest>$GlobalTime.earliest$</earliest>
+          <latest>$GlobalTime.latest$</latest>
           <sampleRatio>1</sampleRatio>
         </search>
         <option name="count">5</option>
@@ -390,4 +413,4 @@
       </table>
     </panel>
   </row>
-</dashboard>
+</form>

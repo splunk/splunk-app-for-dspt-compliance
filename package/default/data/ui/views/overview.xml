@@ -9,12 +9,48 @@
         <div style="color:grey; font-size:100%">
           <b>It is assumed that the following has been achieved to meet Ref.4.2.3 and Ref.6.3.3:</b>
           <ol>
-            <li><b>All indexes have been configured with at least 6 months retention</b></li>
-            <li><b>Data Encryption at rest has been enabled (Splunk Cloud Customers within an AWS Region only)</b></li>
-            <li><b>Security relevant log sources have been onboarded. Guidance can be sought from NCSC (https://www.ncsc.gov.uk/files/NCSC_SOC_Feeds.pdf)</b></li>
+            <li>
+              <b>All indexes have been configured with at least 6 months retention</b>
+            </li>
+            <li>
+              <b>Data Encryption at rest has been enabled (Splunk Cloud Customers within an AWS Region only)</b>
+            </li>
+            <li>
+              <b>Security relevant log sources have been onboarded. Guidance can be sought from NCSC (https://www.ncsc.gov.uk/files/NCSC_SOC_Feeds.pdf)</b>
+            </li>
           </ol>
         </div>
       </html>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <single>
+        <search>
+          <query>| inputlookup evidence_questionnaire.csv | fillnull Value=NULL | eval status=if(Answer="NULL",0,1) | stats count as Total, count(eval(status==1)) as Completed | eval percentagecomplete=round(Completed/Total*100,2) | fields percentagecomplete</query>
+          <earliest>-24h@h</earliest>
+          <latest>now</latest>
+          <sampleRatio>1</sampleRatio>
+        </search>
+        <option name="colorBy">value</option>
+        <option name="colorMode">block</option>
+        <option name="drilldown">none</option>
+        <option name="numberPrecision">0.00</option>
+        <option name="rangeColors">["0xdc4e41","0xf1813f","0xf8be34","0x53a051","0xdc4e41"]</option>
+        <option name="rangeValues">[0,25,50,100]</option>
+        <option name="showSparkline">1</option>
+        <option name="showTrendIndicator">1</option>
+        <option name="trellis.enabled">0</option>
+        <option name="trellis.scales.shared">1</option>
+        <option name="trellis.size">medium</option>
+        <option name="trendColorInterpretation">standard</option>
+        <option name="trendDisplayMode">absolute</option>
+        <option name="underLabel">Completed</option>
+        <option name="unit">%</option>
+        <option name="unitPosition">after</option>
+        <option name="useColors">1</option>
+        <option name="useThousandSeparators">0</option>
+      </single>
     </panel>
   </row>
   <row>
@@ -23,7 +59,7 @@
       <single>
         <search>
           <query>| tstats summariesonly=true allow_old_summaries=true dc(Authentication.user) from datamodel=Authentication.Authentication</query>
-          <earliest>-30d@d</earliest>
+          <earliest>@y</earliest>
           <latest>now</latest>
           <sampleRatio>1</sampleRatio>
         </search>
@@ -42,7 +78,7 @@
         <option name="trellis.size">medium</option>
         <option name="trendColorInterpretation">standard</option>
         <option name="trendDisplayMode">absolute</option>
-        <option name="underLabel">Distinct Users Last 30 Days</option>
+        <option name="underLabel">Distinct Users Last 365 Days</option>
         <option name="unitPosition">after</option>
         <option name="useColors">1</option>
         <option name="useThousandSeparators">1</option>
@@ -69,7 +105,7 @@
 | where dest!="unknown" 
 | where dest!="127.0.0.1" 
 | stats dc(dest)</query>
-          <earliest>-30d@d</earliest>
+          <earliest>@y</earliest>
           <latest>now</latest>
           <sampleRatio>1</sampleRatio>
         </search>
@@ -88,7 +124,7 @@
         <option name="trellis.size">medium</option>
         <option name="trendColorInterpretation">standard</option>
         <option name="trendDisplayMode">absolute</option>
-        <option name="underLabel">Distinct Endpoints Last 30 Days</option>
+        <option name="underLabel">Distinct Endpoints Last 365 Days</option>
         <option name="unitPosition">after</option>
         <option name="useColors">1</option>
         <option name="useThousandSeparators">1</option>
@@ -114,11 +150,14 @@
         </search>
         <option name="count">20</option>
         <option name="dataOverlayMode">none</option>
-        <option name="drilldown">none</option>
+        <option name="drilldown">cell</option>
         <option name="percentagesRow">false</option>
         <option name="rowNumbers">false</option>
         <option name="totalsRow">false</option>
         <option name="wrap">true</option>
+        <drilldown>
+          <link target="_blank">/app/splunk_app_for_dspt_compliance/report?s=4.2.3%20-%20Log%20Retention</link>
+        </drilldown>
       </table>
     </panel>
   </row>

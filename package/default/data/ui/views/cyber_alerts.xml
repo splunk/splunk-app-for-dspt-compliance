@@ -1,17 +1,116 @@
-<dashboard theme="dark" version="1.1">
+<form theme="dark" version="1.1">
   <label>Cyber Alerts</label>
+  <description>Ref: 4.2.3 - All High rated cyber alerts must be responded to within 48 hours.</description>
+  <fieldset submitButton="false">
+    <input type="time" token="GlobalTime" searchWhenChanged="true">
+      <label></label>
+      <default>
+        <earliest>-30d@d</earliest>
+        <latest>now</latest>
+      </default>
+    </input>
+  </fieldset>
   <row>
     <panel>
-      <title>Cyber Alerts per Severity</title>
-      <chart>
+      <title>High Severity Cyber Alerts</title>
+      <single>
         <search>
-          <query>`default_index` | stats count by severity</query>
-          <earliest>0</earliest>
+          <query>`default_index` sourcetype="nhs:cyberalerts"  severity=high | stats count</query>
+          <earliest>$GlobalTime.earliest$</earliest>
+          <latest>$GlobalTime.latest$</latest>
           <sampleRatio>1</sampleRatio>
         </search>
+        <option name="colorMode">none</option>
+        <option name="drilldown">none</option>
+        <option name="rangeColors">["0xdc4e41","0xdc4e41"]</option>
+        <option name="rangeValues">[0]</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="trellis.enabled">0</option>
+        <option name="trellis.scales.shared">1</option>
+        <option name="trellis.size">large</option>
+        <option name="useColors">1</option>
+      </single>
+    </panel>
+    <panel>
+      <title>Medium Severity Cyber Alerts</title>
+      <single>
+        <search>
+          <query>`default_index` sourcetype="nhs:cyberalerts"  severity=medium | stats count</query>
+          <earliest>$GlobalTime.earliest$</earliest>
+          <latest>$GlobalTime.latest$</latest>
+          <sampleRatio>1</sampleRatio>
+        </search>
+        <option name="colorMode">none</option>
+        <option name="drilldown">none</option>
+        <option name="rangeColors">["0xf1813f","0xf1813f"]</option>
+        <option name="rangeValues">[0]</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="trellis.enabled">0</option>
+        <option name="trellis.scales.shared">1</option>
+        <option name="trellis.size">large</option>
+        <option name="useColors">1</option>
+      </single>
+    </panel>
+    <panel>
+      <title>Low Severity Cyber Alerts</title>
+      <single>
+        <search>
+          <query>`default_index` sourcetype="nhs:cyberalerts"  severity=low | stats count</query>
+          <earliest>$GlobalTime.earliest$</earliest>
+          <latest>$GlobalTime.latest$</latest>
+          <sampleRatio>1</sampleRatio>
+        </search>
+        <option name="colorMode">none</option>
+        <option name="drilldown">none</option>
+        <option name="rangeColors">["0xf8be34","0xf8be34"]</option>
+        <option name="rangeValues">[0]</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="trellis.enabled">0</option>
+        <option name="trellis.scales.shared">1</option>
+        <option name="trellis.size">large</option>
+        <option name="useColors">1</option>
+      </single>
+    </panel>
+    <panel>
+      <title>Info Severity Cyber Alerts</title>
+      <single>
+        <search>
+          <query>`default_index` sourcetype="nhs:cyberalerts"  severity="Information only" | stats count</query>
+          <earliest>$GlobalTime.earliest$</earliest>
+          <latest>$GlobalTime.latest$</latest>
+          <sampleRatio>1</sampleRatio>
+        </search>
+        <option name="colorMode">none</option>
+        <option name="drilldown">none</option>
+        <option name="rangeColors">["0x0b45a2","0x0b45a2"]</option>
+        <option name="rangeValues">[0]</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="trellis.enabled">0</option>
+        <option name="trellis.scales.shared">1</option>
+        <option name="trellis.size">large</option>
+        <option name="useColors">1</option>
+      </single>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <chart>
+        <search>
+          <query>`default_index` sourcetype="nhs:cyberalerts"  severity=* | timechart count</query>
+          <earliest>$GlobalTime.earliest$</earliest>
+          <latest>$GlobalTime.latest$</latest>
+          <sampleRatio>1</sampleRatio>
+        </search>
+        <search type="annotation">
+          <query>`default_index` sourcetype="nhs:cyberalerts"  severity=high | eval annotation_label = title | eval annotation_category = shortsummary</query>
+          <earliest>$GlobalTime.earliest$</earliest>
+          <latest>$GlobalTime.latest$</latest>
+          </search>
         <option name="charting.axisLabelsX.majorLabelStyle.overflowMode">ellipsisNone</option>
         <option name="charting.axisLabelsX.majorLabelStyle.rotation">0</option>
-        <option name="charting.axisTitleX.visibility">visible</option>
+        <option name="charting.axisTitleX.text">Time</option>
+        <option name="charting.axisTitleX.visibility">collapsed</option>
+        <option name="charting.axisTitleY.text">Total Cyber Alerts</option>
         <option name="charting.axisTitleY.visibility">visible</option>
         <option name="charting.axisTitleY2.visibility">visible</option>
         <option name="charting.axisX.abbreviation">none</option>
@@ -21,7 +120,7 @@
         <option name="charting.axisY2.abbreviation">none</option>
         <option name="charting.axisY2.enabled">0</option>
         <option name="charting.axisY2.scale">inherit</option>
-        <option name="charting.chart">pie</option>
+        <option name="charting.chart">line</option>
         <option name="charting.chart.bubbleMaximumSize">50</option>
         <option name="charting.chart.bubbleMinimumSize">10</option>
         <option name="charting.chart.bubbleSizeBy">area</option>
@@ -35,8 +134,9 @@
         <option name="charting.layout.splitSeries.allowIndependentYRanges">0</option>
         <option name="charting.legend.labelStyle.overflowMode">ellipsisMiddle</option>
         <option name="charting.legend.mode">standard</option>
-        <option name="charting.legend.placement">right</option>
+        <option name="charting.legend.placement">none</option>
         <option name="charting.lineWidth">2</option>
+        <option name="refresh.display">progressbar</option>
         <option name="trellis.enabled">0</option>
         <option name="trellis.scales.shared">1</option>
         <option name="trellis.size">medium</option>
@@ -48,18 +148,23 @@
       <title>List of Cyber Alerts</title>
       <table>
         <search>
-          <query>`default_index` | table _time, severity, threatType, title, shortsummary | sort by _time, severity desc</query>
-          <earliest>0</earliest>
+          <query>`default_index` sourcetype="nhs:cyberalerts" | table _time, severity, threatType, title, shortsummary | sort by _time, severity desc</query>
+          <earliest>$GlobalTime.earliest$</earliest>
+          <latest>$GlobalTime.latest$</latest>
           <sampleRatio>1</sampleRatio>
         </search>
         <option name="count">20</option>
         <option name="dataOverlayMode">none</option>
         <option name="drilldown">none</option>
         <option name="percentagesRow">false</option>
+        <option name="refresh.display">progressbar</option>
         <option name="rowNumbers">false</option>
         <option name="totalsRow">false</option>
         <option name="wrap">true</option>
+        <format type="color" field="severity">
+          <colorPalette type="map">{"High":#DC4E41,"Medium":#F1813F,"Low":#F8BE34}</colorPalette>
+        </format>
       </table>
     </panel>
   </row>
-</dashboard>
+</form>
