@@ -23,14 +23,14 @@ The DSPT Audit applies, for example, to the UK National Health Service (NHS).
 * [Splunk Common Information Model App](https://splunkbase.splunk.com/app/1621/)
 * [Lookup File Editor](https://splunkbase.splunk.com/app/1724/)
 * Accelerated Data Models:
-    1. Authentication
-    2. Change
-    3. Endpoint
-    4. Intrusion Detection
-    5. Malware
-    6. Network Sessions
-    7. Network Traffic
-    8. Web
+ 1. Authentication
+ 2. Change
+ 3. Endpoint
+ 4. Intrusion Detection
+ 5. Malware
+ 6. Network Sessions
+ 7. Network Traffic
+ 8. Web
 
 Data required to fully utilise this app:
 
