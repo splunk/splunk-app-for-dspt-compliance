@@ -1,13 +1,22 @@
-<dashboard theme="dark" version="1.1">
+<form theme="dark" version="1.1">
   <label>Administrator</label>
+  <fieldset submitButton="false">
+    <input type="time" token="GlobalTime" searchWhenChanged="true">
+      <label></label>
+      <default>
+        <earliest>-30d@d</earliest>
+        <latest>now</latest>
+      </default>
+    </input>
+  </fieldset>
   <row>
     <panel>
       <title>Create Actions</title>
       <single>
         <search>
           <query>| tstats summariesonly=true allow_old_summaries=true count from datamodel=Change.All_Changes where nodename=All_Changes.Account_Management All_Changes.vendor_product="Microsoft Windows" All_Changes.action=created</query>
-          <earliest>-24h@h</earliest>
-          <latest>now</latest>
+          <earliest>$GlobalTime.earliest$</earliest>
+          <latest>$GlobalTime.latest$</latest>
           <sampleRatio>1</sampleRatio>
         </search>
         <option name="colorBy">value</option>
@@ -15,8 +24,8 @@
         <option name="drilldown">all</option>
         <option name="height">90</option>
         <option name="numberPrecision">0</option>
-        <option name="rangeColors">["0x53a051","0x0877a6","0xf8be34","0xf1813f","0xdc4e41"]</option>
-        <option name="rangeValues">[0,30,70,100]</option>
+        <option name="rangeColors">["0x0b45a2","0xdc4e41"]</option>
+        <option name="rangeValues">[0]</option>
         <option name="refresh.display">progressbar</option>
         <option name="showSparkline">1</option>
         <option name="showTrendIndicator">1</option>
@@ -26,7 +35,7 @@
         <option name="trendColorInterpretation">inverse</option>
         <option name="trendDisplayMode">absolute</option>
         <option name="unitPosition">after</option>
-        <option name="useColors">0</option>
+        <option name="useColors">1</option>
         <option name="useThousandSeparators">1</option>
       </single>
     </panel>
@@ -35,8 +44,8 @@
       <single>
         <search>
           <query>| tstats summariesonly=true allow_old_summaries=true count from datamodel=Change.All_Changes where nodename=All_Changes.Account_Management All_Changes.vendor_product="Microsoft Windows" All_Changes.action=modified</query>
-          <earliest>-24h@h</earliest>
-          <latest>now</latest>
+          <earliest>$GlobalTime.earliest$</earliest>
+          <latest>$GlobalTime.latest$</latest>
           <sampleRatio>1</sampleRatio>
         </search>
         <option name="colorBy">value</option>
@@ -44,8 +53,8 @@
         <option name="drilldown">all</option>
         <option name="height">90</option>
         <option name="numberPrecision">0</option>
-        <option name="rangeColors">["0x53a051","0x0877a6","0xf8be34","0xf1813f","0xdc4e41"]</option>
-        <option name="rangeValues">[0,30,70,100]</option>
+        <option name="rangeColors">["0x0b45a2","0x0b45a2"]</option>
+        <option name="rangeValues">[0]</option>
         <option name="refresh.display">progressbar</option>
         <option name="showSparkline">1</option>
         <option name="showTrendIndicator">1</option>
@@ -55,7 +64,7 @@
         <option name="trendColorInterpretation">standard</option>
         <option name="trendDisplayMode">absolute</option>
         <option name="unitPosition">after</option>
-        <option name="useColors">0</option>
+        <option name="useColors">1</option>
         <option name="useThousandSeparators">1</option>
       </single>
     </panel>
@@ -64,8 +73,8 @@
       <single>
         <search>
           <query>| tstats summariesonly=true allow_old_summaries=true count from datamodel=Change.All_Changes where nodename=All_Changes.Account_Management All_Changes.vendor_product="Microsoft Windows" All_Changes.action=deleted</query>
-          <earliest>-24h@h</earliest>
-          <latest>now</latest>
+          <earliest>$GlobalTime.earliest$</earliest>
+          <latest>$GlobalTime.latest$</latest>
           <sampleRatio>1</sampleRatio>
         </search>
         <option name="colorBy">value</option>
@@ -73,8 +82,8 @@
         <option name="drilldown">all</option>
         <option name="height">90</option>
         <option name="numberPrecision">0</option>
-        <option name="rangeColors">["0x53a051","0x0877a6","0xf8be34","0xf1813f","0xdc4e41"]</option>
-        <option name="rangeValues">[0,30,70,100]</option>
+        <option name="rangeColors">["0x0b45a2","0x0b45a2"]</option>
+        <option name="rangeValues">[0]</option>
         <option name="refresh.display">progressbar</option>
         <option name="showSparkline">1</option>
         <option name="showTrendIndicator">1</option>
@@ -84,7 +93,7 @@
         <option name="trendColorInterpretation">standard</option>
         <option name="trendDisplayMode">absolute</option>
         <option name="unitPosition">after</option>
-        <option name="useColors">0</option>
+        <option name="useColors">1</option>
         <option name="useThousandSeparators">1</option>
       </single>
     </panel>
@@ -93,8 +102,8 @@
       <single>
         <search>
           <query>`wineventlog-index` (EventCode=576 OR EventCode=577 OR EventCode=4672 OR EventCode=578 OR EventCode=4674) | stats count</query>
-          <earliest>-24h@h</earliest>
-          <latest>now</latest>
+          <earliest>$GlobalTime.earliest$</earliest>
+          <latest>$GlobalTime.latest$</latest>
           <sampleRatio>1</sampleRatio>
         </search>
         <option name="colorBy">value</option>
@@ -102,8 +111,8 @@
         <option name="drilldown">none</option>
         <option name="height">90</option>
         <option name="numberPrecision">0</option>
-        <option name="rangeColors">["0x53a051","0xf8be34","0xdc4e41"]</option>
-        <option name="rangeValues">[0,5]</option>
+        <option name="rangeColors">["0x0b45a2","0x0b45a2"]</option>
+        <option name="rangeValues">[0]</option>
         <option name="refresh.display">progressbar</option>
         <option name="showSparkline">1</option>
         <option name="showTrendIndicator">1</option>
@@ -113,7 +122,7 @@
         <option name="trendColorInterpretation">standard</option>
         <option name="trendDisplayMode">absolute</option>
         <option name="unitPosition">after</option>
-        <option name="useColors">0</option>
+        <option name="useColors">1</option>
         <option name="useThousandSeparators">1</option>
       </single>
     </panel>
@@ -126,8 +135,8 @@
           <query>| tstats summariesonly=true allow_old_summaries=true count from datamodel=Change.All_Changes where nodename=All_Changes.Account_Management All_Changes.action=* NOT All_Changes.action=unknown  by _time, All_Changes.action span=10m 
 | rename "All_Changes.*" as "*"
 | timechart minspan=10m sum(count) by action</query>
-          <earliest>-24h@h</earliest>
-          <latest>now</latest>
+          <earliest>$GlobalTime.earliest$</earliest>
+          <latest>$GlobalTime.latest$</latest>
           <sampleRatio>1</sampleRatio>
         </search>
         <option name="charting.axisLabelsX.majorLabelStyle.overflowMode">ellipsisNone</option>
@@ -142,7 +151,7 @@
         <option name="charting.axisY2.abbreviation">none</option>
         <option name="charting.axisY2.enabled">0</option>
         <option name="charting.axisY2.scale">inherit</option>
-        <option name="charting.chart">column</option>
+        <option name="charting.chart">line</option>
         <option name="charting.chart.bubbleMaximumSize">50</option>
         <option name="charting.chart.bubbleMinimumSize">10</option>
         <option name="charting.chart.bubbleSizeBy">area</option>
@@ -152,13 +161,13 @@
         <option name="charting.chart.stackMode">stacked</option>
         <option name="charting.chart.style">shiny</option>
         <option name="charting.drilldown">all</option>
+        <option name="charting.fieldColors">{"modified": 0x0b45a2, "success": 0xdc4e41, "NULL":0xC4C4C0}</option>
         <option name="charting.layout.splitSeries">0</option>
         <option name="charting.layout.splitSeries.allowIndependentYRanges">0</option>
         <option name="charting.legend.labelStyle.overflowMode">ellipsisMiddle</option>
         <option name="charting.legend.mode">standard</option>
         <option name="charting.legend.placement">bottom</option>
         <option name="charting.lineWidth">2</option>
-        <option name="charting.fieldColors">{"modified": 0x0b45a2, "success": 0xdc4e41, "NULL":0xC4C4C0}</option>
         <option name="height">434</option>
         <option name="refresh.display">progressbar</option>
         <option name="trellis.enabled">0</option>
@@ -174,8 +183,8 @@
         <search>
           <query>| tstats summariesonly=true allow_old_summaries=true count from datamodel=Change.All_Changes where nodename=All_Changes.Account_Management All_Changes.action=* NOT All_Changes.action=unknown  by All_Changes.user, All_Changes.action 
 | rename "All_Changes.*" as "*" | stats list(action) as action list(count) as count by user | sort - count</query>
-          <earliest>-24h@h</earliest>
-          <latest>now</latest>
+          <earliest>$GlobalTime.earliest$</earliest>
+          <latest>$GlobalTime.latest$</latest>
           <sampleRatio>1</sampleRatio>
         </search>
         <option name="count">4</option>
@@ -200,11 +209,11 @@
 | rename All_Changes."*" as "*" 
 | eventstats min(_time) as min, max(_time) as max, dc(result_id) as events by user, dest 
 | eval account_life = (max-min) / 60 
-| where events = 2 AND account_life &lt; 180 
+| where events = 2 AND account_life &lt; 500 
 | dedup user, dest 
 | table user, dest, account_life | sort account_life</query>
-          <earliest>-24h@h</earliest>
-          <latest>now</latest>
+          <earliest>$GlobalTime.earliest$</earliest>
+          <latest>$GlobalTime.latest$</latest>
           <sampleRatio>1</sampleRatio>
         </search>
         <option name="count">5</option>
@@ -229,8 +238,8 @@
 | rename "All_Changes.action" as action
 | stats sparkline(sum(count)) as sparkline,sum(count) as count by action 
 | sort 10 - count</query>
-          <earliest>-24h@h</earliest>
-          <latest>now</latest>
+          <earliest>$GlobalTime.earliest$</earliest>
+          <latest>$GlobalTime.latest$</latest>
           <sampleRatio>1</sampleRatio>
         </search>
         <option name="count">100</option>
@@ -250,4 +259,4 @@
       </table>
     </panel>
   </row>
-</dashboard>
+</form>

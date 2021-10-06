@@ -16,12 +16,17 @@
   <a href="/app/lookup_editor/lookup_edit?owner=nobody&amp;namespace=splunk_app_for_dspt_compliance&amp;lookup=evidence_questionnaire.csv&amp;type=csv">Evidence Questionnaire</a>
   
   <collection label="Report">
-    <collection label="Reports 1">
-      <view name="reports" />
-    </collection>
-    <view name="reports" />
-  	<view name="reports" />
-  	<view name="reports" />
+    <saved name="4.2.3 - Log Retention" />
+    <saved name="4.2.4 - Default Account Use" />
+    <saved name="4.2.4 - Dormant Accounts" />
+  	<saved name="4.5.2 - Account Lockouts" />
+  	<saved name="6.2.1, 6.2.3 - Hosts with AntiVirus" />
+    <saved name="6.2.5 - Blocked Connections to Malicious Websites" />
+    <saved name="8.3.7 - OS Versions"/>
+    <saved name="9.5.3 - Firewall Change Monitoring" />
+    <saved name="9.5.8 - Remote Authenitcation" />
+    <saved name="9.6.3 - Blocked Inbound Connections" />
+    <saved name="9.6.5 - Triggered Firewall Rules" />
   </collection>
   
   <collection label="Core Views">
