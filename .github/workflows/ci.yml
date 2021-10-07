@@ -78,5 +78,7 @@ jobs:
         run: |
           app_package=$(ls -1 *gz | xargs basename)
           splunk-appinspect inspect $app_package --output-file appinspect.json --log-level INFO
+          appinspect_id=$(cat appinspect.json | jq -r '.request_id')
+          echo "AppInspect ID: ${appinspect_id}"
           exit `cat appinspect.json | jq '.summary.failure'`
 
