@@ -5,7 +5,7 @@
       <html>
         <h1>Splunk DSPT Compliance App</h1>
         <p>The Data Security and Protection Toolkit is an online self-assessment tool that allows organisations to measure their performance against the National Data Guardian’s 10 data security standards.</p>
-        <p>This Splunk App aims to support organisations that have access to NHS patient data and systems provide exidence that they are practising good data security and that personal information is handled correctly.</p>
+        <p>This Splunk App aims to support organisations that have access to patient data and systems provide evidence that they are practising good data security and that personal information is handled correctly.</p>
         <div style="color:grey; font-size:100%">
           <b>It is assumed that the following has been achieved to meet Ref.4.2.3 and Ref.6.3.3:</b>
           <ol>
