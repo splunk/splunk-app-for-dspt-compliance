@@ -1,9 +1,9 @@
 # Splunk App for DSPT Compliance
 This app has been created to assist in yearly compliance to the Data Security and Protection Toolkit (DSPT). 
-The DSPT Audit applies, for example, to the UK National Health Service (NHS). 
+The DSPT Audit applies.
 
 ## Features
-* Recurrent retrieval of cyber alerts from NHS feeds to enrich data analysis
+* Recurrent retrieval of cyber alerts from feeds to enrich data analysis
 * Dashboards to ease compliance with the DSPT for audit purposes:
     
     | **Dashboard Name**     | **Description**                                     |
@@ -65,8 +65,8 @@ The app aims to assist in DSPT asertions where IT staff are asked to regularly r
 
 #### Troubleshooting
 Useful SPL searches to:
-* Verify NHS Cyber Alerts indexing `index=_internal nhs_cyberalerts.py`
-* Verify the index has been populated with NHS Cyber Alerts `index=main`
+* Verify Cyber Alerts indexing `index=_internal nhs_cyberalerts.py`
+* Verify the index has been populated with Cyber Alerts `index=main`
     > Please replace `main` with the index  specified in the configuration and make sure the time range is set on `All time`
 
 ## Contributing
