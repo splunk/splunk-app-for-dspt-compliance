@@ -46,7 +46,7 @@ Data required to fully utilise this app:
 Please refer to the [Splunk Documentation](https://docs.splunk.com/Documentation/AddOns/released/Overview/Installingadd-ons) for guidance on installing the Add-On in your environment. The app needs to be installed on the SH tier.
 
 #### Configure Cyber Alerts Indexing
-By default the app comes with a pre-configured and enabled input named `main`, that will daily fetch cyber alerts via NHS REST API and store them in the default index.
+By default the app comes with a pre-configured and disabled input named `main`, that will daily fetch cyber alerts via NHS REST API and store them in the default index.
 
 For customizations or additional feeds, from your Splunk instance Web Interface:
 * Browse to *Settings / Data Inputs*
@@ -56,7 +56,7 @@ For customizations or additional feeds, from your Splunk instance Web Interface:
     * **Enable Checkpoint** - to align with your events duplication policy
     * (Optional) **More settings** - to specify host, interval, index and sourcetype
 
-> Dear **admins**, if you decide to store cyber alerts in another index, please make sure you update the macro `default_index` with *Definition* such as `index=<YOUR_INDEX>`
+> Dear **admins**, please first enable the input, if you decide to store cyber alerts in another index, please make sure you update the macro `default_index` with *Definition* such as `index=<YOUR_INDEX>`
 
 ### Usage
 Once installed, from your Splunk instance Web Interface, select the app *DSPT Compliance* and navigate through the dashboards to verify content.
