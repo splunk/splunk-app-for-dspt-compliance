@@ -143,6 +143,8 @@ class NHS(smi.Script):
         checkpoint = checkpointer.FileCheckpointer(meta_configs['checkpoint_dir'])
         
         url = input_items.get("rest_api")
+        if not url.startswith("https://"):
+   raise Exception("URL Scheme must be 'https://'. Got {}".format(url))
         use_checkpoint = bool(int(input_items.get("enable_checkpoint")))
 
         # Initializing NHS client
