@@ -20,6 +20,7 @@ jobs:
     outputs:
       old_version: ${{ steps.bumpversion.outputs.old_ver }}
       version: ${{ steps.bumpversion.outputs.new_ver }}
+      app_name: ${{ steps.appinfo.outputs.app_name }}
       new_sha: ${{ steps.sha.outputs.sha }}
     # Validate bump part before moving forward 
     if: contains(['major', 'minor', 'patch'], ${{ github.event.inputs.bumpPart }})
@@ -27,12 +28,19 @@ jobs:
       - name: Checkout source
         uses: actions/checkout@v2
 
+      - name: Get app info
+        id: appinfo
+        run: |
+          APP_NAME=$(cat app.manifest | jq -r '.info.id.name' | tr _ - )
+          echo "::set-output name=app_name::${APP_NAME}"
+
       - name: Bump version and push tag
         id: bumpversion
-        uses: jaumann/github-bumpversion-action@v0.0.7
+        uses: jasonamyers/github-bumpversion-action@v1.0.4
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           DEFAULT_BUMP: ${{ github.event.inputs.bumpPart }}
+
       - name: Push tags
         run: |
           remote_repo="https://${GITHUB_ACTOR}:${{ secrets.GITHUB_TOKEN }}@github.com/${GITHUB_REPOSITORY}.git"
@@ -55,38 +63,20 @@ jobs:
           ref: ${{ needs.tag-version.outputs.new_sha }}
           fetch-depth: 0
 
-      - name: Setup Python
-        uses: actions/setup-python@v2
-        with:
-          python-version: 3.7
-      
-      - name: Install dependencies
+      - name: Excluding images from README
         run: |
-          python -m pip install --upgrade pip
-          pip install --upgrade splunk-packaging-toolkit splunk-add-on-ucc-framework
+          sed -i '/^!/d' README.md
 
-      - name: Building app
-        run: |
-          ucc-gen --ta-version ${{ needs.tag-version.outputs.version }}
-      
-      - name: Finalizing app [Temporary Ops]
-        run: |
-          cp README.md output/splunk_app_for_dspt_compliance/
-          echo "Removing 'lib/*.dist-info' folders to prevent issues"
-          rm -rf output/splunk_app_for_dspt_compliance/lib/*.dist-info
-          echo "Fixing *nix file permissions"
-          chmod 644 output/splunk_app_for_dspt_compliance/appserver/static/js/build/* output/splunk_app_for_dspt_compliance/appserver/templates/* 
-          chmod 644 output/splunk_app_for_dspt_compliance/default/data/ui/views/configuration.xml output/splunk_app_for_dspt_compliance/default/data/ui/views/inputs.xml 
-      
-      - name: Packaging app
+      - name: Bundle app source
         run: |
           mkdir dist
-          slim package output/splunk_app_for_dspt_compliance -o dist/
-
-      - uses: actions/upload-artifact@v2
+          tar -zcvf dist/${{ needs.tag-version.outputs.app_name }}_v${{ needs.tag-version.outputs.version }}.tgz --exclude='.[^/]*' --exclude=./dist .
+  
+      - name: Upload artifact
+        uses: actions/upload-artifact@v2
         with:
           name: app_tgz
-          path: dist/splunk_app_for_dspt_compliance-${{ needs.tag-version.outputs.version }}.tar.gz
+          path: dist/${{ needs.tag-version.outputs.app_name }}_v${{ needs.tag-version.outputs.version }}.tgz
 
   release:
     name: Create Release
@@ -153,12 +143,3 @@ jobs:
           asset_path: ${{ steps.app-name.outputs.package }}
           asset_name: ${{ steps.app-name.outputs.package }}
           asset_content_type: application/tgz
-
-  publish:
-    needs: release
-    name: Upload to Splunkbase
-    runs-on: ubuntu-latest
-    steps:
-      - name: Placeholder for publish
-        run: |
-          echo "Placeholder for Splunkbase upload"
