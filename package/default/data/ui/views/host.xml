@@ -15,9 +15,8 @@
       <table>
         <title>ref:8.3.7</title>
         <search>
-          <query>index=* sourcetype=WinHostMon source=OperatingSystem
-| stats latest(OS) as OS, latest(Domain) as Domain, latest(Architecture) as Architecture by host
-| stats count by OS, Architecture</query>
+          <query>index=* sourcetype=WinHostMon 
+| stats latest(OS) as OS, latest(Domain) as Domain, latest(Architecture) as Architecture by ComputerName | stats count by OS, Architecture</query>
           <earliest>$globalTime.earliest$</earliest>
           <latest>$globalTime.latest$</latest>
           <sampleRatio>1</sampleRatio>
