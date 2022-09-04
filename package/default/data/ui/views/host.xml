@@ -15,8 +15,8 @@
       <table>
         <title>ref:8.3.7</title>
         <search>
-          <query>eventtype="hostmon_windows" (Type=Computer OR Type=OperatingSystem) 
-| stats latest(OS) as OS, latest(Domain) as Domain, latest(Architecture) as Architecture by host 
+          <query>index=* sourcetype=WinHostMon source=OperatingSystem
+| stats latest(OS) as OS, latest(Domain) as Domain, latest(Architecture) as Architecture by host
 | stats count by OS, Architecture</query>
           <earliest>$globalTime.earliest$</earliest>
           <latest>$globalTime.latest$</latest>
@@ -39,7 +39,7 @@
       <chart>
         <title>ref:8.3.2, 8.3.4</title>
         <search>
-          <query>sourcetype=WindowsUpdateLog status=installed package=* host="*"| dedup package, host | timechart count by package useother=f</query>
+          <query>index=* sourcetype=WindowsUpdateLog status=installed signature=* | timechart count</query>
           <earliest>$globalTime.earliest$</earliest>
           <latest>$globalTime.latest$</latest>
           <sampleRatio>1</sampleRatio>
@@ -83,7 +83,7 @@
       <chart>
         <title>ref:8.3.2, 8.3.4</title>
         <search>
-          <query>sourcetype=WindowsUpdateLog status!=installed package=* host="*" | dedup package, host | timechart count by package useother=f</query>
+          <query>index=* sourcetype=WindowsUpdateLog status=failure signature=* | timechart count</query>
           <earliest>$globalTime.earliest$</earliest>
           <latest>$globalTime.latest$</latest>
           <sampleRatio>1</sampleRatio>
