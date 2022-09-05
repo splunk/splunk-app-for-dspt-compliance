@@ -27,7 +27,177 @@
     <panel>
       <single>
         <search>
-          <query>| inputlookup evidence_questionnaire.csv | fillnull Value=NULL | eval status=if(Answer="NULL",0,1) | stats count as Total, count(eval(status==1)) as Completed | eval percentagecomplete=round(Completed/Total*100,2) | fields percentagecomplete</query>
+          <query><dashboard theme="dark" version="1.1">
+  <label>Overview</label>
+  <row>
+    <panel>
+      <html>
+        <h1>Splunk DSPT Compliance App</h1>
+        <p>The Data Security and Protection Toolkit is an online self-assessment tool that allows organisations to measure their performance against the National Data Guardian’s 10 data security standards.</p>
+        <p>This Splunk App aims to support organisations that have access to patient data and systems provide evidence that they are practising good data security and that personal information is handled correctly.</p>
+        <div style="color:grey; font-size:100%">
+          <b>It is assumed that the following has been achieved to meet Ref.4.2.3 and Ref.6.3.3:</b>
+          <ol>
+            <li>
+              <b>All indexes have been configured with at least 6 months retention</b>
+            </li>
+            <li>
+              <b>Data Encryption at rest has been enabled (Splunk Cloud Customers within an AWS Region only)</b>
+            </li>
+            <li>
+              <b>Security relevant log sources have been onboarded. Guidance can be sought from NCSC (https://www.ncsc.gov.uk/files/NCSC_SOC_Feeds.pdf)</b>
+            </li>
+          </ol>
+        </div>
+      </html>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <single>
+        <search>
+          <query>| inputlookup evidence_questionnaire.csv 
+| rename "Evidence/Answer" AS Answer 
+| fillnull Value=NULL 
+| eval status=if(Answer="NULL",0,1) 
+| stats count as Total, count(eval(status==1)) as Completed 
+| eval percentagecomplete=round(Completed/Total*100,2) 
+| fields percentagecomplete</query>
+          <earliest>-24h@h</earliest>
+          <latest>now</latest>
+          <sampleRatio>1</sampleRatio>
+        </search>
+        <option name="colorBy">value</option>
+        <option name="colorMode">block</option>
+        <option name="drilldown">none</option>
+        <option name="numberPrecision">0.00</option>
+        <option name="rangeColors">["0xdc4e41","0xf1813f","0xf8be34","0x53a051","0xdc4e41"]</option>
+        <option name="rangeValues">[0,25,50,100]</option>
+        <option name="showSparkline">1</option>
+        <option name="showTrendIndicator">1</option>
+        <option name="trellis.enabled">0</option>
+        <option name="trellis.scales.shared">1</option>
+        <option name="trellis.size">medium</option>
+        <option name="trendColorInterpretation">standard</option>
+        <option name="trendDisplayMode">absolute</option>
+        <option name="underLabel">Completed</option>
+        <option name="unit">%</option>
+        <option name="unitPosition">after</option>
+        <option name="useColors">1</option>
+        <option name="useThousandSeparators">0</option>
+      </single>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <title>Accounts Monitored</title>
+      <single>
+        <search>
+          <query>| tstats summariesonly=true allow_old_summaries=true dc(Authentication.user) from datamodel=Authentication.Authentication</query>
+          <earliest>@y</earliest>
+          <latest>now</latest>
+          <sampleRatio>1</sampleRatio>
+        </search>
+        <option name="colorBy">value</option>
+        <option name="colorMode">block</option>
+        <option name="drilldown">all</option>
+        <option name="height">90</option>
+        <option name="numberPrecision">0</option>
+        <option name="rangeColors">["0x0b45a2","0x0b45a2"]</option>
+        <option name="rangeValues">[0]</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="showSparkline">1</option>
+        <option name="showTrendIndicator">1</option>
+        <option name="trellis.enabled">0</option>
+        <option name="trellis.scales.shared">1</option>
+        <option name="trellis.size">medium</option>
+        <option name="trendColorInterpretation">standard</option>
+        <option name="trendDisplayMode">absolute</option>
+        <option name="underLabel">Distinct Users Last 365 Days</option>
+        <option name="unitPosition">after</option>
+        <option name="useColors">1</option>
+        <option name="useThousandSeparators">1</option>
+      </single>
+    </panel>
+    <panel>
+      <title>Endpoints Monitored</title>
+      <single>
+        <search>
+          <query>| tstats summariesonly=true allow_old_summaries=true count from datamodel=Endpoint.Filesystem by Filesystem.dest 
+| rename Filesystem."*" AS "*" 
+| append 
+    [| tstats summariesonly=true allow_old_summaries=true count from datamodel=Endpoint.Processes by Processes.dest 
+    | rename Processes."*" AS "*"] 
+| append 
+    [| tstats summariesonly=true allow_old_summaries=true count from datamodel=Endpoint.Services by Services.dest 
+    | rename Services."*" AS "*"] 
+| append 
+    [| tstats summariesonly=true allow_old_summaries=true count from datamodel=Endpoint.Registry by Registry.dest 
+    | rename Registry."*" AS "*"] 
+| append 
+    [| tstats summariesonly=true allow_old_summaries=true count from datamodel=Endpoint.Ports by Ports.dest 
+    | rename Ports."*" AS "*"] 
+| where dest!="unknown" 
+| where dest!="127.0.0.1" 
+| stats dc(dest)</query>
+          <earliest>@y</earliest>
+          <latest>now</latest>
+          <sampleRatio>1</sampleRatio>
+        </search>
+        <option name="colorBy">value</option>
+        <option name="colorMode">block</option>
+        <option name="drilldown">none</option>
+        <option name="height">90</option>
+        <option name="numberPrecision">0</option>
+        <option name="rangeColors">["0x0b45a2","0x0b45a2"]</option>
+        <option name="rangeValues">[1]</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="showSparkline">1</option>
+        <option name="showTrendIndicator">1</option>
+        <option name="trellis.enabled">0</option>
+        <option name="trellis.scales.shared">1</option>
+        <option name="trellis.size">medium</option>
+        <option name="trendColorInterpretation">standard</option>
+        <option name="trendDisplayMode">absolute</option>
+        <option name="underLabel">Distinct Endpoints Last 365 Days</option>
+        <option name="unitPosition">after</option>
+        <option name="useColors">1</option>
+        <option name="useThousandSeparators">1</option>
+      </single>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <title>Data Retention by Data Index</title>
+      <table>
+        <title>ref:4.2.3</title>
+        <search>
+          <query>| rest /services/data/indexes 
+| join type=outer title 
+    [| rest /services/data/indexes-extended
+        ] 
+| eval retentionInDays=frozenTimePeriodInSecs/86400 
+| search title!=_* title!=lastchance title!=cim_modactions title!=history title!=main title!=summary title!=splunklogger 
+| table title retentionInDays | rename retentionInDays as "Retention in Days"</query>
+          <earliest>-24h@h</earliest>
+          <latest>now</latest>
+          <sampleRatio>1</sampleRatio>
+        </search>
+        <option name="count">20</option>
+        <option name="dataOverlayMode">none</option>
+        <option name="drilldown">cell</option>
+        <option name="percentagesRow">false</option>
+        <option name="rowNumbers">false</option>
+        <option name="totalsRow">false</option>
+        <option name="wrap">true</option>
+        <drilldown>
+          <link target="_blank">/app/splunk_app_for_dspt_compliance/report?s=4.2.3%20-%20Log%20Retention</link>
+        </drilldown>
+      </table>
+    </panel>
+  </row>
+</dashboard>
+</query>
           <earliest>-24h@h</earliest>
           <latest>now</latest>
           <sampleRatio>1</sampleRatio>
