@@ -276,7 +276,7 @@
     <panel>
       <title>Blocked Connections</title>
       <single>
-        <title>ref:6.2.5, 9.7.3</title>
+        <title>ref:6.2.5, 9.6.3</title>
         <search>
           <query>| tstats summariesonly=true allow_old_summaries=true count from datamodel=Network_Traffic.All_Traffic where (All_Traffic.action=blocked OR All_Traffic.action=dropped)</query>
           <earliest>$GlobalTime.earliest$</earliest>
@@ -391,7 +391,7 @@
     <panel>
       <title>Blocked Traffic with Suspected Attack Signatures</title>
       <map>
-        <title>ref:6.2.5</title>
+        <title>ref:6.2.5, 9.6.3</title>
         <search>
           <query>| tstats local=false summariesonly=true allow_old_summaries=true count from datamodel=Intrusion_Detection.IDS_Attacks where IDS_Attacks.severity="*" IDS_Attacks.action!=allowed by IDS_Attacks.src, IDS_Attacks.signature  | rename "IDS_Attacks.*" as "*" 
 | iplocation src | geostats sum(count) by signature globallimit=20 binspanlat=10 binspanlong=10</query>
@@ -433,7 +433,7 @@
     <panel>
       <title>Firewall Rules Triggered</title>
       <table>
-        <title>ref:9.7.5</title>
+        <title>ref:9.6.5</title>
         <search>
           <query>| tstats summariesonly=true allow_old_summaries=true count as triggered from datamodel=Network_Traffic.All_Traffic by All_Traffic.rule
 | rename "All_Traffic.*" as "*"</query>
