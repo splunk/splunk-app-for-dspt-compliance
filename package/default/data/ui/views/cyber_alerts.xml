@@ -1,6 +1,6 @@
 <form theme="dark" version="1.1">
   <label>Cyber Alerts</label>
-  <description>Ref: 4.2.3 - All High rated cyber alerts must be responded to within 48 hours.</description>
+  <description>Ref: 6.3.2 - All High rated cyber alerts must be responded to within 48 hours.</description>
   <fieldset submitButton="false">
     <input type="time" token="GlobalTime" searchWhenChanged="true">
       <label></label>
