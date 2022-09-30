@@ -1,2 +1,0 @@
-splunktaucclib>=4.0.7
-api-client>=1.3.1
