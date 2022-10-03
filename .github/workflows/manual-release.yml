@@ -31,7 +31,7 @@ jobs:
       - name: Get app info
         id: appinfo
         run: |
-          APP_NAME=$(cat app.manifest | jq -r '.info.id.name' | tr _ - )
+          APP_NAME=$(cat package/app.manifest | jq -r '.info.id.name')
           echo "::set-output name=app_name::${APP_NAME}"
 
       - name: Bump version and push tag
@@ -63,20 +63,39 @@ jobs:
           ref: ${{ needs.tag-version.outputs.new_sha }}
           fetch-depth: 0
 
-      - name: Excluding images from README
-        run: |
-          sed -i '/^!/d' README.md
+      - name: Setup Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.7
 
-      - name: Bundle app source
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install --upgrade splunk-packaging-toolkit splunk-add-on-ucc-framework
+
+      - name: Building app
+        run: |
+          ucc-gen --ta-version ${{ needs.tag-version.outputs.version }}
+
+      - name: Finalizing app [Temporary Ops]
+        run: |
+          cp README.md output/${{ needs.tag-version.outputs.app_name }}/
+          echo "Removing 'lib/*.dist-info' folders to prevent issues"
+          rm -rf output/${{ needs.tag-version.outputs.app_name }}/lib/*.dist-info
+          echo "Fixing *nix file permissions"
+          chmod 644 output/${{ needs.tag-version.outputs.app_name }}/appserver/static/js/build/* output/${{ needs.tag-version.outputs.app_name }}/appserver/templates/* 
+          chmod 644 output/${{ needs.tag-version.outputs.app_name }}/default/data/ui/views/configuration.xml output/${{ needs.tag-version.outputs.app_name }}/default/data/ui/views/inputs.xml
+
+      - name: Packaging app
         run: |
           mkdir dist
-          tar -zcvf dist/${{ needs.tag-version.outputs.app_name }}_v${{ needs.tag-version.outputs.version }}.tgz --exclude='.[^/]*' --exclude=./dist .
-  
+          slim package output/${{ needs.tag-version.outputs.app_name }} -o dist/
+
       - name: Upload artifact
         uses: actions/upload-artifact@v2
         with:
           name: app_tgz
-          path: dist/${{ needs.tag-version.outputs.app_name }}_v${{ needs.tag-version.outputs.version }}.tgz
+          path: dist/${{ needs.tag-version.outputs.app_name }}_v${{ needs.tag-version.outputs.version }}.tar.gz
 
   release:
     name: Create Release
