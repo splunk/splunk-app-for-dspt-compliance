@@ -95,7 +95,7 @@ jobs:
         uses: actions/upload-artifact@v2
         with:
           name: app_tgz
-          path: dist/${{ needs.tag-version.outputs.app_name }}_v${{ needs.tag-version.outputs.version }}.tar.gz
+          path: dist/${{ needs.tag-version.outputs.app_name }}-${{ needs.tag-version.outputs.version }}.tar.gz
 
   release:
     name: Create Release
