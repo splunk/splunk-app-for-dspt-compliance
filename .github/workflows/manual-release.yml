@@ -80,6 +80,7 @@ jobs:
       - name: Finalizing app [Temporary Ops]
         run: |
           cp README.md output/${{ needs.tag-version.outputs.app_name }}/
+          cp LICENSE output/${{ needs.tag-version.outputs.app_name }}/
           echo "Removing 'lib/*.dist-info' folders to prevent issues"
           rm -rf output/${{ needs.tag-version.outputs.app_name }}/lib/*.dist-info
           echo "Fixing *nix file permissions"
