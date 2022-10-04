@@ -84,7 +84,7 @@ jobs:
           echo "Removing 'lib/*.dist-info' folders to prevent issues"
           rm -rf output/${{ needs.tag-version.outputs.app_name }}/lib/*.dist-info
           echo "Fixing *nix file permissions"
-          chmod 644 output/${{ needs.tag-version.outputs.app_name }}/appserver/static/js/build/* output/${{ needs.tag-version.outputs.app_name }}/appserver/templates/* 
+          chmod 644 output/${{ needs.tag-version.outputs.app_name }}/appserver/static/js/build/* output/${{ needs.tag-version.outputs.app_name }}/appserver/templates/* output/splunk_app_for_dspt_compliance/appserver/static/js/dependencies.txt
           chmod 644 output/${{ needs.tag-version.outputs.app_name }}/default/data/ui/views/configuration.xml output/${{ needs.tag-version.outputs.app_name }}/default/data/ui/views/inputs.xml
 
       - name: Packaging app
