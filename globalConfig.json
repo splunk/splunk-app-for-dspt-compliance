@@ -2,7 +2,7 @@
     "meta": {
         "name": "splunk_app_for_dspt_compliance",
         "displayName": "DSPT Compliance",
-        "version": "2.1.4",
+        "version": "2.1.5",
         "restRoot": "splunk_app_for_dspt_compliance",
         "schemaVersion": "0.0.3"
     },
